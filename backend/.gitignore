@@ -1,0 +1,11 @@
+firebase-debug.log
+.firebase/
+firebase_config.json
+
+# IDEs / editors
+.vscode/
+.idea/
+
+__pycache__/
+temp_storage/
+.env

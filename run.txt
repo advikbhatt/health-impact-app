@@ -1,0 +1,6 @@
+BACKEND
+uvicorn main:app --reload --port 8000
+
+
+FRONTEND
+npm run dev
