@@ -1,7 +1,7 @@
 // src/components/PollutionInfo.jsx
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import "./PollutionInfo.css"; // 🔥 Import custom styles
+import "./PollutionInfo.css"; 
 
 const WHO_LIMITS = {
   pm2_5: 15, pm10: 45, co: 4000, no2: 200, o3: 100
