@@ -7,7 +7,8 @@ import requests
 import firebase_admin
 from firebase_admin import credentials, firestore
 from fastapi.middleware.cors import CORSMiddleware
-
+# Initialize FastAPI app
+app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],  
@@ -44,8 +45,7 @@ PERPLEXITY_API_KEY = os.getenv("PERPLEXITY_API_KEY")
 if not OPENWEATHER_API_KEY or not PERPLEXITY_API_KEY:
     raise EnvironmentError("Missing OPENWEATHER_API_KEY or PERPLEXITY_API_KEY in environment variables.")
 
-# Initialize FastAPI app
-app = FastAPI()
+
 
 # CORS Middleware for frontend-backend communication
 app.add_middleware(
