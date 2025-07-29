@@ -6,7 +6,7 @@ export default function Dashboard() {
   useEffect(() => {
     const city = localStorage.getItem("profileCity");
     if (city && localStorage.getItem("pollutionFetched") === "true") {
-      fetch(`http://localhost:8000/compare_pollution/${city}`)
+      fetch(`${import.meta.env.VITE_BACKEND_URL}/compare_pollution/${city}`)
         .then((res) => res.json())
         .then((cmp) => setTable(cmp));
     }

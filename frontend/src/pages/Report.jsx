@@ -11,7 +11,7 @@ const Report = ({ user }) => {
   const getReport = async () => {
     setLoading(true);
     try {
-      const res = await axios.get("http://localhost:8000/generate_report");
+      const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/generate_report`);
       const content = res?.data?.choices?.[0]?.message?.content;
       setReport(content || "⚠️ No content returned from AI.");
     } catch {
