@@ -1,99 +1,112 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
+import os, json
 from dotenv import load_dotenv
-import os
-import json
-
 import requests
 import firebase_admin
-from firebase_admin import credentials, db
+from firebase_admin import credentials, firestore
 
-# Load environment variables from .env
+# Load environment variables
 load_dotenv()
 
-# Firebase config from environment variables
-firebase_creds = {
-    "type": os.getenv("FIREBASE_TYPE", "service_account"),
-    "project_id": os.getenv("FIREBASE_PROJECT_ID"),
-    "private_key_id": os.getenv("FIREBASE_PRIVATE_KEY_ID"),
-    "private_key": os.getenv("FIREBASE_PRIVATE_KEY").replace("\\n", "\n"),
-    "client_email": os.getenv("FIREBASE_CLIENT_EMAIL"),
-    "client_id": os.getenv("FIREBASE_CLIENT_ID"),
-    "auth_uri": os.getenv("FIREBASE_AUTH_URI"),
-    "token_uri": os.getenv("FIREBASE_TOKEN_URI"),
-    "auth_provider_x509_cert_url": os.getenv("FIREBASE_AUTH_PROVIDER_CERT_URL"),
-    "client_x509_cert_url": os.getenv("FIREBASE_CLIENT_CERT_URL"),
-}
-
-# Initialize Firebase app only once
+# Initialize Firebase only once
 if not firebase_admin._apps:
-    cred = credentials.Certificate(firebase_creds)
-    firebase_admin.initialize_app(cred, {
-        "databaseURL": os.getenv("FIREBASE_DB_URL")
-    })
+    cred = credentials.Certificate("firebase_config.json")
+    firebase_admin.initialize_app(cred)
 
-app = FastAPI()
+db = firestore.client()
 
-# Allow CORS (adjust allowed origins as needed)
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],  # Change to frontend URL in prod
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
-# ENV-based API keys
+# Load API keys
 OPENWEATHER_API_KEY = os.getenv("OPENWEATHER_API_KEY")
-AIR_API_KEY = os.getenv("AIR_API_KEY")
 PERPLEXITY_API_KEY = os.getenv("PERPLEXITY_API_KEY")
 
-# Save user profile
-@app.post("/user_profile")
-async def save_user_profile(data: dict):
-    try:
-        ref = db.reference("/users")
-        ref.push(data)
-        return {"message": "User profile saved successfully"}
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+if not OPENWEATHER_API_KEY or not PERPLEXITY_API_KEY:
+    raise EnvironmentError("Missing OPENWEATHER_API_KEY or PERPLEXITY_API_KEY in environment variables.")
 
-# Save pollution info
-@app.post("/pollution_info")
-async def save_pollution_info(data: dict):
-    try:
-        ref = db.reference("/pollution")
-        ref.push(data)
-        return {"message": "Pollution data saved successfully"}
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+# Initialize FastAPI app
+app = FastAPI()
 
-# Generate AI health report
-@app.post("/generate_report")
-async def generate_report(data: dict):
+# CORS Middleware for frontend-backend communication
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Use specific origin in production
+    allow_methods=["*"],
+    allow_headers=["*"]
+)
+
+# Pydantic models for data validation
+class UserProfile(BaseModel):
+    name: str
+    age: int
+    gender: str
+    city: str
+    disease: str
+
+class PollutionData(BaseModel):
+    city: str
+    lat: float
+    lon: float
+    pm2_5: float
+    pm10: float
+    co: float
+    no2: float
+    o3: float
+
+# Save user data to Firebase and local file
+@app.post("/save_user")
+def save_user(data: UserProfile):
+    db.collection("users").add(data.dict())
+    os.makedirs("temp_storage", exist_ok=True)
+    with open("temp_storage/profile.json", "w") as f:
+        json.dump(data.dict(), f)
+    return {"msg": "User saved"}
+
+# Save pollution data to Firebase and local file
+@app.post("/save_pollution")
+def save_pollution(data: PollutionData):
+    db.collection("pollution").add(data.dict())
+    os.makedirs("temp_storage", exist_ok=True)
+    with open("temp_storage/pollution.json", "w") as f:
+        json.dump(data.dict(), f)
+    return {"msg": "Pollution saved"}
+
+# Generate health impact report using Perplexity AI
+@app.get("/generate_report")
+def generate_report():
     try:
-        prompt = f"""Generate a health impact report for a {data['age']} year old {data['gender']} in {data['city']} based on these pollution values:
-        PM2.5: {data['pm2_5']} µg/m³, PM10: {data['pm10']} µg/m³, CO: {data['co']} µg/m³, NO2: {data['no2']} µg/m³, O3: {data['o3']} µg/m³.
-        Include short-term effects, long-term effects, and precautions."""
-        
+        with open("temp_storage/profile.json") as f1, open("temp_storage/pollution.json") as f2:
+            profile = json.load(f1)
+            pollution = json.load(f2)
+    except FileNotFoundError:
+        return {"error": "Missing profile or pollution data"}
+
+    prompt = (
+        f"You are a health expert. Generate a detailed but simple health impact report for a {profile['age']} year old "
+        f"{profile['gender']} from {pollution['city']} with {profile['disease']}. "
+        f"Pollution levels: PM2.5={pollution['pm2_5']}, PM10={pollution['pm10']}, CO={pollution['co']}, "
+        f"NO₂={pollution['no2']}, O₃={pollution['o3']}. "
+        f"Explain short-term and long-term health effects, and suggest precautions."
+    )
+
+    headers = {
+        "Authorization": f"Bearer {PERPLEXITY_API_KEY}",
+        "Content-Type": "application/json"
+    }
+
+    payload = {
+        "model": "sonar-reasoning",
+        "messages": [{"role": "user", "content": prompt}]
+    }
+
+    try:
         response = requests.post(
             "https://api.perplexity.ai/chat/completions",
-            headers={
-                "Authorization": f"Bearer {PERPLEXITY_API_KEY}",
-                "Content-Type": "application/json"
-            },
-            json={
-                "model": "llama-3-sonar-small-32k-online",
-                "messages": [{"role": "user", "content": prompt}],
-                "temperature": 0.7
-            }
+            headers=headers,
+            json=payload
         )
-
         response.raise_for_status()
-        result = response.json()
-        report = result['choices'][0]['message']['content']
+    except requests.exceptions.RequestException as e:
+        return {"error": str(e)}
 
-        return {"report": report}
-
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error generating report: {str(e)}")
+    return response.json()
