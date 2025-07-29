@@ -1,100 +1,99 @@
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
-import os, json
 from dotenv import load_dotenv
+import os
+import json
+
 import requests
 import firebase_admin
-from firebase_admin import credentials, firestore
+from firebase_admin import credentials, db
 
 # Load environment variables from .env
 load_dotenv()
 
-# Secure Firebase credential initialization
-cred_path = os.getenv("FIREBASE_CRED_PATH", "firebase_config.json")
-cred = credentials.Certificate(cred_path)
-firebase_admin.initialize_app(cred)
-db = firestore.client()
+# Firebase config from environment variables
+firebase_creds = {
+    "type": os.getenv("FIREBASE_TYPE", "service_account"),
+    "project_id": os.getenv("FIREBASE_PROJECT_ID"),
+    "private_key_id": os.getenv("FIREBASE_PRIVATE_KEY_ID"),
+    "private_key": os.getenv("FIREBASE_PRIVATE_KEY").replace("\\n", "\n"),
+    "client_email": os.getenv("FIREBASE_CLIENT_EMAIL"),
+    "client_id": os.getenv("FIREBASE_CLIENT_ID"),
+    "auth_uri": os.getenv("FIREBASE_AUTH_URI"),
+    "token_uri": os.getenv("FIREBASE_TOKEN_URI"),
+    "auth_provider_x509_cert_url": os.getenv("FIREBASE_AUTH_PROVIDER_CERT_URL"),
+    "client_x509_cert_url": os.getenv("FIREBASE_CLIENT_CERT_URL"),
+}
 
-# API Keys securely loaded from env
-OPENWEATHER_API_KEY = os.getenv("OPENWEATHER_API_KEY")
-PERPLEXITY_API_KEY = os.getenv("PERPLEXITY_API_KEY")
+# Initialize Firebase app only once
+if not firebase_admin._apps:
+    cred = credentials.Certificate(firebase_creds)
+    firebase_admin.initialize_app(cred, {
+        "databaseURL": os.getenv("FIREBASE_DB_URL")
+    })
 
-# FastAPI setup
 app = FastAPI()
+
+# Allow CORS (adjust allowed origins as needed)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Restrict in production
+    allow_origins=["*"],  # Change to frontend URL in prod
+    allow_credentials=True,
     allow_methods=["*"],
-    allow_headers=["*"]
+    allow_headers=["*"],
 )
 
-# Pydantic models
-class UserProfile(BaseModel):
-    name: str
-    age: int
-    gender: str
-    city: str
-    disease: str
+# ENV-based API keys
+OPENWEATHER_API_KEY = os.getenv("OPENWEATHER_API_KEY")
+AIR_API_KEY = os.getenv("AIR_API_KEY")
+PERPLEXITY_API_KEY = os.getenv("PERPLEXITY_API_KEY")
 
-class PollutionData(BaseModel):
-    city: str
-    lat: float
-    lon: float
-    pm2_5: float
-    pm10: float
-    co: float
-    no2: float
-    o3: float
-
-# Endpoint to save user profile
-@app.post("/save_user")
-def save_user(data: UserProfile):
-    db.collection("users").add(data.dict())
-    os.makedirs("temp_storage", exist_ok=True)
-    with open("temp_storage/profile.json", "w") as f:
-        json.dump(data.dict(), f)
-    return {"msg": "User saved"}
-
-# Endpoint to save pollution data
-@app.post("/save_pollution")
-def save_pollution(data: PollutionData):
-    db.collection("pollution").add(data.dict())
-    os.makedirs("temp_storage", exist_ok=True)
-    with open("temp_storage/pollution.json", "w") as f:
-        json.dump(data.dict(), f)
-    return {"msg": "Pollution data saved"}
-
-# Endpoint to generate AI health report
-@app.get("/generate_report")
-def generate_report():
+# Save user profile
+@app.post("/user_profile")
+async def save_user_profile(data: dict):
     try:
-        with open("temp_storage/profile.json") as f1, open("temp_storage/pollution.json") as f2:
-            profile = json.load(f1)
-            pollution = json.load(f2)
-    except FileNotFoundError:
-        return {"error": "User or pollution data missing"}
+        ref = db.reference("/users")
+        ref.push(data)
+        return {"message": "User profile saved successfully"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
-    prompt = (
-        f"You are a health expert. Generate a health impact report for a {profile['age']} year old "
-        f"{profile['gender']} from {pollution['city']} with {profile['disease']}. "
-        f"Pollution levels: PM2.5={pollution['pm2_5']}, PM10={pollution['pm10']}, CO={pollution['co']}, "
-        f"NO2={pollution['no2']}, O3={pollution['o3']}. Provide short-term and long-term health effects, and precautions."
-    )
+# Save pollution info
+@app.post("/pollution_info")
+async def save_pollution_info(data: dict):
+    try:
+        ref = db.reference("/pollution")
+        ref.push(data)
+        return {"message": "Pollution data saved successfully"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
-    headers = {
-        "Authorization": f"Bearer {PERPLEXITY_API_KEY}",
-        "Content-Type": "application/json"
-    }
+# Generate AI health report
+@app.post("/generate_report")
+async def generate_report(data: dict):
+    try:
+        prompt = f"""Generate a health impact report for a {data['age']} year old {data['gender']} in {data['city']} based on these pollution values:
+        PM2.5: {data['pm2_5']} µg/m³, PM10: {data['pm10']} µg/m³, CO: {data['co']} µg/m³, NO2: {data['no2']} µg/m³, O3: {data['o3']} µg/m³.
+        Include short-term effects, long-term effects, and precautions."""
+        
+        response = requests.post(
+            "https://api.perplexity.ai/chat/completions",
+            headers={
+                "Authorization": f"Bearer {PERPLEXITY_API_KEY}",
+                "Content-Type": "application/json"
+            },
+            json={
+                "model": "llama-3-sonar-small-32k-online",
+                "messages": [{"role": "user", "content": prompt}],
+                "temperature": 0.7
+            }
+        )
 
-    payload = {
-        "model": "sonar-reasoning",
-        "messages": [{"role": "user", "content": prompt}]
-    }
+        response.raise_for_status()
+        result = response.json()
+        report = result['choices'][0]['message']['content']
 
-    response = requests.post("https://api.perplexity.ai/chat/completions", headers=headers, json=payload)
+        return {"report": report}
 
-    if response.status_code != 200:
-        return {"error": "Failed to fetch report from Perplexity", "details": response.text}
-
-    return response.json()
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error generating report: {str(e)}")
