@@ -1,13 +1,15 @@
 services:
   - type: web
-    name: health-backend
+    name: health-impact-backend
     env: python
+    region: oregon
     plan: free
-    rootDir: backend
+    branch: main
     buildCommand: pip install -r requirements.txt
     startCommand: uvicorn main:app --host 0.0.0.0 --port 10000
+    workingDir: backend
+    autoDeploy: true
+
     envVars:
       - key: OPENWEATHER_API_KEY
-        sync: false
       - key: PERPLEXITY_API_KEY
-        sync: false
