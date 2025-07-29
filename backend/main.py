@@ -6,7 +6,15 @@ from dotenv import load_dotenv
 import requests
 import firebase_admin
 from firebase_admin import credentials, firestore
+from fastapi.middleware.cors import CORSMiddleware
 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 # Load environment variables
 load_dotenv()
 cred = credentials.Certificate({
