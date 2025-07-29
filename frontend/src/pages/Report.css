@@ -1,0 +1,52 @@
+/* Report.css */
+
+.report-container {
+  margin-top: 2.5rem;
+  max-width: 768px;
+  margin-left: auto;
+  margin-right: auto;
+  background-color: #0f172a; /* dark slate */
+  color: white;
+  border-radius: 1rem;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+  padding: 1.5rem;
+  border: 1px solid #334155;
+}
+
+.report-title {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #c084fc; /* purple-400 */
+  margin-bottom: 1rem;
+}
+
+.report-content {
+  background-color: #1e293b; /* slate-800 */
+  padding: 1rem;
+  border-radius: 0.75rem;
+  overflow-x: auto;
+  font-size: 0.875rem;
+  line-height: 1.75;
+  white-space: pre-wrap;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  border: 1px solid #334155;
+  color: #f1f5f9;
+}
+
+.report-status {
+  text-align: center;
+  margin-top: 1.5rem;
+  color: #38bdf8; /* cyan-300 */
+}
+
+.report-error {
+  text-align: center;
+  color: #f87171; /* red-400 */
+  margin-top: 1.25rem;
+}
+
+.report-placeholder {
+  text-align: center;
+  color: #94a3b8; /* slate-400 */
+  margin-top: 1.5rem;
+}

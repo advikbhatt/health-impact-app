@@ -1,0 +1,65 @@
+/* UserForm.css */
+
+.user-form-container {
+  padding: 1.5rem;
+  background-color: #1f1f1f;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  border-radius: 1rem;
+  width: 100%;
+  max-width: 32rem; /* 512px */
+  margin: 2.5rem auto 0 auto;
+}
+
+.user-form-title {
+  font-size: 1.5rem;
+  font-weight: bold;
+  text-align: center;
+  color: #1d4ed8; /* blue-700 */
+  margin-bottom: 1rem;
+}
+
+.user-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.user-form input,
+.user-form select {
+  width: 100%;
+  padding: 0.625rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.5rem;
+  transition: border 0.3s;
+  font-size: 1rem;
+}
+
+.user-form input:focus,
+.user-form select:focus {
+  outline: none;
+  border-color: #2563eb; /* blue-600 */
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+}
+
+.user-form button {
+  width: 100%;
+  padding: 0.75rem;
+  background-color: #2563eb;
+  color: white;
+  border: none;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  transition: background-color 0.3s;
+}
+
+.user-form button:hover {
+  background-color: #252525;
+}
+
+
+.user-form-error {
+  color: #ef4444; /* red-500 */
+  font-size: 0.875rem;
+  text-align: center;
+  margin-top: 0.5rem;
+}

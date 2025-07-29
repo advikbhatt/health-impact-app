@@ -1,6 +1,7 @@
 // src/components/Report.jsx
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import "./Report.css";
 
 const Report = ({ user }) => {
   const [report, setReport] = useState("");
@@ -24,14 +25,14 @@ const Report = ({ user }) => {
     if (user) getReport();
   }, [user]);
 
-  if (!user) return <p className="text-center text-gray-400 mt-6">Please submit user data to see report.</p>;
-  if (error) return <p className="text-red-500 mt-5 text-center">{error}</p>;
-  if (loading) return <p className="text-center mt-6 text-cyan-300">Generating report...</p>;
+  if (!user) return <p className="report-placeholder">Please submit user data to see report.</p>;
+  if (error) return <p className="report-error">{error}</p>;
+  if (loading) return <p className="report-status">Generating report...</p>;
 
   return (
-    <div className="mt-10 max-w-3xl mx-auto bg-[#0f172a] text-white rounded-xl shadow-xl p-6 border border-gray-700">
-      <h2 className="text-2xl font-bold text-purple-400 mb-4">🧠 Health Impact Report</h2>
-      <div className="bg-gray-900 p-4 rounded-lg overflow-x-auto text-sm leading-relaxed text-gray-100 whitespace-pre-wrap font-mono border border-gray-700">
+    <div className="report-container">
+      <h2 className="report-title">🧠 Health Impact Report</h2>
+      <div className="report-content">
         {report}
       </div>
     </div>

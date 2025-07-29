@@ -1,6 +1,7 @@
 // src/components/UserForm.jsx
 import React, { useState } from "react";
 import axios from "axios";
+import "./UserForm.css"; // 🔥 Import custom CSS
 
 const UserForm = ({ onUserSaved }) => {
   const [form, setForm] = useState({
@@ -31,26 +32,23 @@ const UserForm = ({ onUserSaved }) => {
   };
 
   return (
-    <div className="p-6 bg-white shadow-xl rounded-xl w-full max-w-lg mx-auto mt-10">
-      <h2 className="text-2xl font-bold mb-4 text-center text-blue-700">🧍 User Profile</h2>
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <input name="name" value={form.name} onChange={handleChange} placeholder="Name"
-          className="w-full border p-2 rounded-lg" required />
-        <input name="age" type="number" value={form.age} onChange={handleChange} placeholder="Age"
-          className="w-full border p-2 rounded-lg" required />
-        <input name="city" value={form.city} onChange={handleChange} placeholder="City"
-          className="w-full border p-2 rounded-lg" required />
-        <select name="gender" value={form.gender} onChange={handleChange}
-          className="w-full border p-2 rounded-lg">
+    <div className="user-form-container">
+      <h2 className="user-form-title">🧍 User Profile</h2>
+      <form onSubmit={handleSubmit} className="user-form">
+        <input name="name" value={form.name} onChange={handleChange} placeholder="Name" required />
+        <input name="age" type="number" value={form.age} onChange={handleChange} placeholder="Age" required />
+        <input name="city" value={form.city} onChange={handleChange} placeholder="City" required />
+
+        <select name="gender" value={form.gender} onChange={handleChange}>
           <option>Male</option><option>Female</option><option>Other</option>
         </select>
-        <select name="disease" value={form.disease} onChange={handleChange}
-          className="w-full border p-2 rounded-lg">
+
+        <select name="disease" value={form.disease} onChange={handleChange}>
           <option>None</option><option>Asthma</option><option>Heart Disease</option><option>Allergy</option>
         </select>
-        <button type="submit"
-          className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg w-full">Submit</button>
-        {error && <p className="text-red-500 text-sm">{error}</p>}
+
+        <button type="submit">Submit</button>
+        {error && <p className="user-form-error">{error}</p>}
       </form>
     </div>
   );

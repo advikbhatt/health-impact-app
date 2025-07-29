@@ -1,0 +1,68 @@
+/* PollutionInfo.css */
+
+.pollution-container {
+  margin-top: 2.5rem;
+  max-width: 768px;
+  margin-left: auto;
+  margin-right: auto;
+  background-color: #1e293b; /* slate-800 */
+  border: 1px solid #334155; /* slate-700 */
+  border-radius: 1rem;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
+}
+
+.pollution-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #22d3ee; /* cyan-400 */
+  padding: 1rem;
+  border-bottom: 1px solid #334155;
+}
+
+.pollution-table {
+  width: 100%;
+  font-size: 0.875rem;
+  text-align: left;
+  border-collapse: collapse;
+}
+
+.pollution-table thead {
+  background-color: #1f2937; /* gray-800 */
+  color: #d1d5db; /* gray-300 */
+  text-transform: uppercase;
+}
+
+.pollution-table th,
+.pollution-table td {
+  padding: 0.75rem;
+}
+
+.pollution-table tbody tr {
+  border-top: 1px solid #334155; /* gray-700 */
+}
+
+.pollutant-name {
+  text-transform: capitalize;
+  color: #f1f5f9; /* gray-100 */
+}
+
+.value-good {
+  color: #4ade80; /* green-400 */
+  font-weight: bold;
+}
+
+.value-bad {
+  color: #f87171; /* red-400 */
+  font-weight: bold;
+}
+
+.limit-value {
+  color: #94a3b8; /* gray-400 */
+}
+
+p{
+    text-align: center;
+    color: #94a3b8;
+    margin-top: 1.5rem;
+}

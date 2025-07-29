@@ -1,6 +1,7 @@
 // src/components/PollutionInfo.jsx
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import "./PollutionInfo.css"; // 🔥 Import custom styles
 
 const WHO_LIMITS = {
   pm2_5: 15, pm10: 45, co: 4000, no2: 200, o3: 100
@@ -50,20 +51,24 @@ const PollutionInfo = ({ user }) => {
   if (!pollution) return <p className="text-center text-gray-400 mt-6">Loading pollution info...</p>;
 
   return (
-    <div className="mt-10 max-w-3xl mx-auto bg-[#1e293b] border border-gray-700 rounded-2xl shadow-lg overflow-hidden">
-      <h2 className="text-xl text-cyan-400 font-semibold p-4 border-b border-gray-600">🌍 Pollution in {pollution.city}</h2>
-      <table className="w-full text-left text-sm">
-        <thead className="bg-gray-800 text-gray-300 uppercase">
-          <tr><th className="p-3">Pollutant</th><th className="p-3">Value (µg/m³)</th><th className="p-3">WHO Limit</th></tr>
+    <div className="pollution-container">
+      <h2 className="pollution-title">🌍 Pollution in {pollution.city}</h2>
+      <table className="pollution-table">
+        <thead>
+          <tr>
+            <th>Pollutant</th>
+            <th>Value (µg/m³)</th>
+            <th>WHO Limit</th>
+          </tr>
         </thead>
         <tbody>
           {Object.keys(WHO_LIMITS).map((key) => (
-            <tr key={key} className="border-t border-gray-700">
-              <td className="p-3 capitalize">{key.replace("_", ".")}</td>
-              <td className={`p-3 font-bold ${pollution[key] > WHO_LIMITS[key] ? 'text-red-400' : 'text-green-400'}`}>
+            <tr key={key}>
+              <td className="pollutant-name">{key.replace("_", ".")}</td>
+              <td className={pollution[key] > WHO_LIMITS[key] ? "value-bad" : "value-good"}>
                 {pollution[key]}
               </td>
-              <td className="p-3 text-gray-400">{WHO_LIMITS[key]}</td>
+              <td className="limit-value">{WHO_LIMITS[key]}</td>
             </tr>
           ))}
         </tbody>

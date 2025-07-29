@@ -61,6 +61,7 @@ def generate_report():
         pollution = json.load(f2)
 
     prompt = (
+        f"You are a health expert from now on and you will give the following in the format like you are a professional and the other user is naive so explain him in simple terms."
         f"Generate a health impact report for a {profile['age']} year old "
         f"{profile['gender']} from {pollution['city']} with {profile['disease']}. "
         f"Pollution levels: PM2.5={pollution['pm2_5']}, PM10={pollution['pm10']}, CO={pollution['co']}, "
