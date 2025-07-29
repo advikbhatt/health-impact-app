@@ -3,13 +3,11 @@ services:
     name: health-backend
     env: python
     plan: free
-    buildCommand: pip install -r backend/requirements.txt
-    startCommand: uvicorn backend.main:app --host 0.0.0.0 --port 8000
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port 10000
     envVars:
       - key: OPENWEATHER_API_KEY
         sync: false
       - key: PERPLEXITY_API_KEY
         sync: false
-    autoDeploy: true
-    region: oregon
-    rootDir: backend
