@@ -12,6 +12,7 @@ const Report = ({ user }) => {
     setLoading(true);
     try {
       const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/generate_report`);
+      
       const content = res?.data?.choices?.[0]?.message?.content;
       setReport(content || "⚠️ No content returned from AI.");
     } catch {
