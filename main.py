@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import os, json
@@ -7,35 +7,26 @@ import requests
 import firebase_admin
 from firebase_admin import credentials, firestore
 
-# Load environment variables
+# Load .env
 load_dotenv()
 
-# Initialize Firebase only once
-if not firebase_admin._apps:
-    cred = credentials.Certificate("firebase_config.json")
-    firebase_admin.initialize_app(cred)
-
+# Firebase setup
+cred_path = os.getenv("FIREBASE_CRED_PATH", "firebase_config.json")
+cred = credentials.Certificate(cred_path)
+firebase_admin.initialize_app(cred)
 db = firestore.client()
 
-# Load API keys
 OPENWEATHER_API_KEY = os.getenv("OPENWEATHER_API_KEY")
 PERPLEXITY_API_KEY = os.getenv("PERPLEXITY_API_KEY")
 
-if not OPENWEATHER_API_KEY or not PERPLEXITY_API_KEY:
-    raise EnvironmentError("Missing OPENWEATHER_API_KEY or PERPLEXITY_API_KEY in environment variables.")
-
-# Initialize FastAPI app
 app = FastAPI()
-
-# CORS Middleware for frontend-backend communication
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Use specific origin in production
+    allow_origins=["*"],
     allow_methods=["*"],
     allow_headers=["*"]
 )
 
-# Pydantic models for data validation
 class UserProfile(BaseModel):
     name: str
     age: int
@@ -53,40 +44,32 @@ class PollutionData(BaseModel):
     no2: float
     o3: float
 
-# Save user data to Firebase and local file
 @app.post("/save_user")
 def save_user(data: UserProfile):
     db.collection("users").add(data.dict())
-    os.makedirs("temp_storage", exist_ok=True)
     with open("temp_storage/profile.json", "w") as f:
         json.dump(data.dict(), f)
     return {"msg": "User saved"}
 
-# Save pollution data to Firebase and local file
 @app.post("/save_pollution")
 def save_pollution(data: PollutionData):
     db.collection("pollution").add(data.dict())
-    os.makedirs("temp_storage", exist_ok=True)
     with open("temp_storage/pollution.json", "w") as f:
         json.dump(data.dict(), f)
     return {"msg": "Pollution saved"}
 
-# Generate health impact report using Perplexity AI
 @app.get("/generate_report")
 def generate_report():
-    try:
-        with open("temp_storage/profile.json") as f1, open("temp_storage/pollution.json") as f2:
-            profile = json.load(f1)
-            pollution = json.load(f2)
-    except FileNotFoundError:
-        return {"error": "Missing profile or pollution data"}
+    with open("temp_storage/profile.json") as f1, open("temp_storage/pollution.json") as f2:
+        profile = json.load(f1)
+        pollution = json.load(f2)
 
     prompt = (
-        f"You are a health expert. Generate a detailed but simple health impact report for a {profile['age']} year old "
+        f"You are a health expert from now on and you will give the following in the format like you are a professional and the other user is naive so explain him in simple terms. "
+        f"Generate a health impact report for a {profile['age']} year old "
         f"{profile['gender']} from {pollution['city']} with {profile['disease']}. "
         f"Pollution levels: PM2.5={pollution['pm2_5']}, PM10={pollution['pm10']}, CO={pollution['co']}, "
-        f"NO₂={pollution['no2']}, O₃={pollution['o3']}. "
-        f"Explain short-term and long-term health effects, and suggest precautions."
+        f"NO2={pollution['no2']}, O3={pollution['o3']}. Provide short-term and long-term health effects, and precautions."
     )
 
     headers = {
@@ -99,14 +82,10 @@ def generate_report():
         "messages": [{"role": "user", "content": prompt}]
     }
 
-    try:
-        response = requests.post(
-            "https://api.perplexity.ai/chat/completions",
-            headers=headers,
-            json=payload
-        )
-        response.raise_for_status()
-    except requests.exceptions.RequestException as e:
-        return {"error": str(e)}
+    response = requests.post(
+        "https://api.perplexity.ai/chat/completions",
+        headers=headers,
+        json=payload
+    )
 
     return response.json()
