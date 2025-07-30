@@ -91,7 +91,7 @@ def save_pollution(data: PollutionData):
         json.dump(data.dict(), f)
     return {"msg": "Pollution saved"}
 
-# Generate health impact report using Perplexity AI
+
 @app.get("/generate_report")
 def generate_report():
     try:
@@ -126,7 +126,13 @@ def generate_report():
             json=payload
         )
         response.raise_for_status()
-    except requests.exceptions.RequestException as e:
-        return {"error": str(e)}
+        data = response.json()
 
-    return response.json()
+        report_text = data.get("choices", [{}])[0].get("message", {}).get("content", "")
+        if not report_text:
+            return {"error": "AI did not return any content."}
+
+        return {"report": report_text}
+
+    except requests.exceptions.RequestException as e:
+        return {"error": f"Request to AI failed: {e}"}
