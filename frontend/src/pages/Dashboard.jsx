@@ -1,4 +1,6 @@
+// src/components/Dashboard.jsx
 import React, { useEffect, useState } from "react";
+import "./Dashboard.css";
 
 export default function Dashboard() {
   const [table, setTable] = useState([]);
@@ -15,24 +17,26 @@ export default function Dashboard() {
   if (!table.length) return null;
 
   return (
-    <div className="bg-white p-6 rounded shadow">
-      <h2 className="text-2xl font-semibold mb-4">📊 Pollution vs WHO</h2>
-      <table className="w-full table-auto">
+    <div className="dashboard-container">
+      <h2 className="dashboard-title">📊 Pollution vs WHO</h2>
+      <table className="dashboard-table">
         <thead>
-          <tr className="bg-gray-200">
-            <th className="border px-4 py-2">Pollutant</th>
-            <th className="border px-4 py-2">Value</th>
-            <th className="border px-4 py-2">WHO Limit</th>
-            <th className="border px-4 py-2">Status</th>
+          <tr>
+            <th>Pollutant</th>
+            <th>Value (µg/m³)</th>
+            <th>WHO Limit</th>
+            <th>Status</th>
           </tr>
         </thead>
         <tbody>
           {table.map((r) => (
             <tr key={r.pollutant}>
-              <td className="border px-4 py-2">{r.pollutant.toUpperCase()}</td>
-              <td className="border px-4 py-2">{r.value}</td>
-              <td className="border px-4 py-2">{r.who_limit}</td>
-              <td className="border px-4 py-2">{r.status}</td>
+              <td>{r.pollutant.toUpperCase()}</td>
+              <td>{r.value}</td>
+              <td>{r.who_limit}</td>
+              <td className={r.status === "Unsafe" ? "status-bad" : "status-good"}>
+                {r.status}
+              </td>
             </tr>
           ))}
         </tbody>

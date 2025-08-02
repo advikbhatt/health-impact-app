@@ -1,8 +1,11 @@
+// src/pages/Home.jsx
 import React, { useState } from "react";
 import UserForm from "../components/UserForm";
 import PollutionInfo from "../components/PollutionInfo";
-import Report from "../components/Report";
-import "./Home.css"; // 🔥 import your CSS file
+import WaterInfo from "../components/WaterInfo";
+import SoilInfo from "../components/SoilInfo";
+import Report from "./Report";
+import "./Home.css";
 
 const Home = () => {
   const [user, setUser] = useState(null);
@@ -10,25 +13,30 @@ const Home = () => {
   return (
     <div className="home-container">
       <div className="home-inner">
-
-        {/* Section 1: User Form */}
-        <section className="home-section">
-          <h2 className="section-title">🌍 User Information</h2>
+        <div className="home-section">
+          <h2 className="section-title">🧍 User Profile</h2>
           <UserForm onUserSaved={setUser} />
-        </section>
+        </div>
 
-        {/* Section 2: Pollution Info */}
-        <section className="home-section">
-          <h2 className="section-title">🌫️ Pollution Data</h2>
+        <div className="home-section">
+          <h2 className="section-title">🌍 Air Quality</h2>
           <PollutionInfo user={user} />
-        </section>
+        </div>
 
-        {/* Section 3: AI Report */}
-        <section className="home-section">
-          <h2 className="section-title">🧠 Health AI Report</h2>
+        <div className="home-section">
+          <h2 className="section-title">💧 Water Quality</h2>
+          <WaterInfo user={user} />
+        </div>
+
+        <div className="home-section">
+          <h2 className="section-title">🪨 Soil Quality</h2>
+          <SoilInfo user={user} />
+        </div>
+
+        <div className="home-section">
+          <h2 className="section-title">📊 Health Report</h2>
           <Report user={user} />
-        </section>
-
+        </div>
       </div>
     </div>
   );

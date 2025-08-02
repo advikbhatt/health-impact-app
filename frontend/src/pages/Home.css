@@ -1,42 +1,30 @@
 /* Home.css */
 
-/* Global wrapper */
 .home-container {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  background-color: #f4f4f4; /* Light neutral background */
   min-height: 100vh;
-  padding: 2.5rem 1rem;
-  background: linear-gradient(to bottom right, #ebf8ff, #d1fae5);
+  padding: 2rem 1rem;
+  font-family: 'Segoe UI', sans-serif;
 }
 
-/* Wrapper for all content */
 .home-inner {
-  width: 100%;
-  max-width: 960px;
+  max-width: 1000px;
+  margin: 0 auto;
   display: flex;
   flex-direction: column;
   gap: 2rem;
 }
 
-/* Section Card */
 .home-section {
-  background-color: #ffffff;
-  padding: 1.5rem;
-  border-radius: 1.5rem;
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
-  transition: box-shadow 0.3s ease;
-}
-
-.home-section:hover {
-  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+  background-color: white;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
 }
 
 .section-title {
-  font-size: 1.25rem;
-  font-weight: 700;
-  color: #1f2937;
-  margin-bottom: 1rem;
-  border-bottom: 1px solid #e5e7eb;
-  padding-bottom: 0.5rem;
+  font-size: 1.6rem;
+  margin-bottom: 1.2rem;
+  color: #3e5060; /* Primary Blue */
+  text-align: center;
 }

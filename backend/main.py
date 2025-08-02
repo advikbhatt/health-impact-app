@@ -7,6 +7,9 @@ import requests
 import firebase_admin
 from firebase_admin import credentials, firestore
 from fastapi.middleware.cors import CORSMiddleware
+from typing import List
+
+
 # Initialize FastAPI app
 app = FastAPI()
 app.add_middleware(
@@ -91,9 +94,12 @@ def save_pollution(data: PollutionData):
         json.dump(data.dict(), f)
     return {"msg": "Pollution saved"}
 
+class ReportResponse(BaseModel):
+    report: str
 
-@app.get("/generate_report")
+@app.get("/generate_report", response_model=ReportResponse)
 def generate_report():
+
     try:
         with open("temp_storage/profile.json") as f1, open("temp_storage/pollution.json") as f2:
             profile = json.load(f1)
@@ -136,3 +142,31 @@ def generate_report():
 
     except requests.exceptions.RequestException as e:
         return {"error": f"Request to AI failed: {e}"}
+
+
+        
+class WaterParameter(BaseModel):
+    parameter: str
+    value: float
+    status: str
+
+@app.get("/get_water/{city}", response_model=List[WaterParameter])
+async def get_water(city: str):
+    return [
+        {"parameter": "pH", "value": 7.2, "status": "Safe"},
+        {"parameter": "Turbidity", "value": 1.5, "status": "Safe"},
+        {"parameter": "Lead", "value": 0.05, "status": "Unsafe"}
+    ]
+
+class SoilParameter(BaseModel):
+    parameter: str
+    value: float
+    status: str
+
+@app.get("/get_soil/{city}", response_model=List[SoilParameter])
+async def get_soil(city: str):
+    return [
+        {"parameter": "Nitrogen", "value": 45, "status": "Safe"},
+        {"parameter": "Phosphorus", "value": 22, "status": "Safe"},
+        {"parameter": "Lead", "value": 0.1, "status": "Unsafe"}
+    ]

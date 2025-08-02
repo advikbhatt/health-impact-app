@@ -1,0 +1,68 @@
+.water-info-container {
+  padding: 24px;
+  background: linear-gradient(to right, #e0f7fa, #f1f8ff);
+  border-radius: 20px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  font-family: "Segoe UI", Roboto, sans-serif;
+  max-width: 900px;
+  margin: 40px auto;
+  animation: fadeIn 0.6s ease-in-out;
+}
+
+.water-info-container h3 {
+  font-size: 1.8rem;
+  color: #0077b6;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.water-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  overflow: hidden;
+  border-radius: 12px;
+}
+
+.water-table thead {
+  background-color: #caf0f8;
+}
+
+.water-table th,
+.water-table td {
+  padding: 14px 18px;
+  text-align: left;
+  font-size: 1rem;
+  border-bottom: 1px solid #d0f0ff;
+}
+
+.water-table th {
+  font-weight: 600;
+  color: #023e8a;
+}
+
+.water-table tbody tr:hover {
+  background-color: #e3f2fd;
+  transition: background 0.3s ease;
+}
+
+.water-table td {
+  color: #343a40;
+}
+
+p {
+  font-size: 1.1rem;
+  color: #555;
+  text-align: center;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

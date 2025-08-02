@@ -1,68 +1,64 @@
 /* PollutionInfo.css */
 
 .pollution-container {
-  margin-top: 2.5rem;
-  max-width: 768px;
-  margin-left: auto;
-  margin-right: auto;
-  background-color: #1e293b; /* slate-800 */
-  border: 1px solid #334155; /* slate-700 */
-  border-radius: 1rem;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
-  overflow: hidden;
+  background-color: white;
+  padding: 2rem;
+  margin: 2rem auto;
+  max-width: 800px;
+  border-radius: 12px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+  font-family: 'Segoe UI', sans-serif;
 }
 
 .pollution-title {
-  font-size: 1.25rem;
-  font-weight: 600;
-  color: #22d3ee; /* cyan-400 */
-  padding: 1rem;
-  border-bottom: 1px solid #334155;
+  text-align: center;
+  font-size: 1.8rem;
+  margin-bottom: 1.5rem;
+  color: #3e5060; /* Primary Blue */
 }
 
 .pollution-table {
   width: 100%;
-  font-size: 0.875rem;
-  text-align: left;
   border-collapse: collapse;
+  margin-top: 1rem;
+  background-color: #f9f9f9;
+  border-radius: 12px;
+  overflow: hidden;
 }
 
 .pollution-table thead {
-  background-color: #1f2937; /* gray-800 */
-  color: #d1d5db; /* gray-300 */
-  text-transform: uppercase;
+  background-color: #3e5060;
+  color: white;
 }
 
 .pollution-table th,
 .pollution-table td {
-  padding: 0.75rem;
+  padding: 0.75rem 1rem;
+  text-align: center;
+  font-size: 1rem;
 }
 
-.pollution-table tbody tr {
-  border-top: 1px solid #334155; /* gray-700 */
+.pollution-table tbody tr:nth-child(even) {
+  background-color: #f0f4f8;
 }
 
 .pollutant-name {
-  text-transform: capitalize;
-  color: #f1f5f9; /* gray-100 */
+  font-weight: 600;
+  text-transform: uppercase;
+  color: #3e5060;
 }
 
 .value-good {
-  color: #4ade80; /* green-400 */
-  font-weight: bold;
+  color: #2e7d32; /* Green for safe */
+  font-weight: 600;
 }
 
 .value-bad {
-  color: #f87171; /* red-400 */
-  font-weight: bold;
+  color: #d32f2f; /* Red for unsafe */
+  font-weight: 600;
 }
 
 .limit-value {
-  color: #94a3b8; /* gray-400 */
-}
-
-p{
-    text-align: center;
-    color: #94a3b8;
-    margin-top: 1.5rem;
+  color: #6c757d;
+  font-size: 0.95rem;
 }

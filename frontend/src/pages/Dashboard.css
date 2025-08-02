@@ -1,0 +1,48 @@
+/* Dashboard.css */
+
+.dashboard-container {
+  background-color: white;
+  padding: 2rem;
+  margin: 2rem auto;
+  max-width: 900px;
+  border-radius: 12px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.dashboard-title {
+  text-align: center;
+  font-size: 1.8rem;
+  color: #3e5060; /* Primary Blue */
+  margin-bottom: 1.5rem;
+}
+
+.dashboard-table {
+  width: 100%;
+  border-collapse: collapse;
+  overflow: hidden;
+  border-radius: 12px;
+}
+
+.dashboard-table thead {
+  background-color: #3e5060;
+  color: white;
+}
+
+.dashboard-table th,
+.dashboard-table td {
+  padding: 0.75rem 1rem;
+  text-align: center;
+  font-size: 1rem;
+  border: 1px solid #e0e0e0;
+}
+
+.dashboard-table tbody tr:nth-child(even) {
+  background-color: #f0f4f8;
+}
+
+.dashboard-table td:last-child {
+  font-weight: bold;
+  text-transform: uppercase;
+  color: #f08a24; /* Accent Orange for status */
+}

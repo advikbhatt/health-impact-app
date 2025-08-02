@@ -28,7 +28,7 @@ const Report = ({ user }) => {
 
   if (!user) return <p className="report-placeholder">Please submit user data to see report.</p>;
   if (error) return <p className="report-error">{error}</p>;
-  if (loading) return <p className="report-status">Generating report...</p>;
+  if (loading) return <p className="report-status">Hi...,While we review your specific location data for a personalized pollutant analysis, here’s an overview of your country's environmental data to keep you informed.</p>;
 
   return (
     <div className="report-container">
