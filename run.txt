@@ -1,11 +1,5 @@
 BACKEND
 uvicorn main:app --reload --port 8000
 
-
 FRONTEND
 npm run dev
-
-GOOGLE MAPS API KEY 
-AIzaSyDWM0W5rqyV3C2i7ld5TuzPU_ZS21qoMLw
-
-
