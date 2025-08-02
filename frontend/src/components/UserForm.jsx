@@ -45,6 +45,7 @@ const UserForm = ({ onUserSaved }) => {
 
         <select name="disease" value={form.disease} onChange={handleChange}>
           <option>None</option><option>Asthma</option><option>Heart Disease</option><option>Allergy</option>
+          {/* Add more options for desiases later  */}
         </select>
 
         <button type="submit">Submit</button>

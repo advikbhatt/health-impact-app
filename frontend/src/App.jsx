@@ -11,10 +11,10 @@ const Home = () => {
   return (
     <div className="min-h-screen p-4">
       <UserForm onUserSaved={setUser} />
+      <Report user={user} />
       <PollutionInfo user={user} />
       <WaterInfo user={user} />
       <SoilInfo user={user} />
-      <Report user={user} />
     </div>
   );
 };
