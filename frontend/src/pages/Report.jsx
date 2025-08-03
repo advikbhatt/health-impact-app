@@ -32,7 +32,7 @@ const Report = ({ user }) => {
 
   return (
     <div className="report-container">
-      <h2 className="report-title">🧠 Health Impact Report</h2>
+      <h2 className="report-title">Health Impact Report</h2>
       <div className="report-content">
         {report}
       </div>

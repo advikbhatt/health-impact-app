@@ -1,61 +1,80 @@
+/* WaterInfo.css */
+
 .water-info-container {
-  padding: 24px;
-  background: linear-gradient(to right, #e0f7fa, #f1f8ff);
-  border-radius: 20px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
-  font-family: "Segoe UI", Roboto, sans-serif;
-  max-width: 900px;
-  margin: 40px auto;
+  padding: 40px;
+  background-color: #1c1c24;
+  /* border-radius: 16px; */
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+  font-family: "Inter", sans-serif;
+  max-width: 1800px;
+  /* margin: 40px auto; */
   animation: fadeIn 0.6s ease-in-out;
+  color: #ffffff;
 }
 
 .water-info-container h3 {
-  font-size: 1.8rem;
-  color: #0077b6;
-  margin-bottom: 20px;
+  font-size: 2rem;
+  color: #3abff8; /* Cyan-like */
+  margin-bottom: 24px;
   text-align: center;
+  font-weight: 700;
 }
 
 .water-table {
   width: 100%;
-  border-collapse: separate;
-  border-spacing: 0;
-  overflow: hidden;
+  border-collapse: collapse;
   border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.2);
+  background-color: #121218;
 }
 
 .water-table thead {
-  background-color: #caf0f8;
+  background-color: #2a2a34;
 }
 
 .water-table th,
 .water-table td {
-  padding: 14px 18px;
+  padding: 16px 20px;
   text-align: left;
   font-size: 1rem;
-  border-bottom: 1px solid #d0f0ff;
+  border-bottom: 1px solid #292932;
+  color: #e5e7eb;
 }
 
 .water-table th {
   font-weight: 600;
-  color: #023e8a;
+  color: #ffffff;
+  text-transform: uppercase;
+  font-size: 0.95rem;
+  letter-spacing: 0.5px;
+}
+
+.water-table tbody tr:nth-child(even) {
+  background-color: #1a1a22;
+}
+
+.water-table tbody tr:nth-child(odd) {
+  background-color: #101016;
 }
 
 .water-table tbody tr:hover {
-  background-color: #e3f2fd;
+  background-color: #2a2a34;
   transition: background 0.3s ease;
 }
 
 .water-table td {
-  color: #343a40;
+  color: #d1d5db;
 }
 
 p {
-  font-size: 1.1rem;
-  color: #555;
+  font-size: 1rem;
+  color: #9ca3af;
   text-align: center;
+  margin-top: 20px;
 }
 
+/* Animation */
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -64,5 +83,26 @@ p {
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .water-info-container {
+    padding: 24px;
+  }
+
+  .water-info-container h3 {
+    font-size: 1.6rem;
+  }
+
+  .water-table th,
+  .water-table td {
+    padding: 12px 16px;
+    font-size: 0.95rem;
+  }
+
+  p {
+    font-size: 0.95rem;
   }
 }

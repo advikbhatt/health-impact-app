@@ -9,6 +9,10 @@ from firebase_admin import credentials, firestore
 from fastapi.middleware.cors import CORSMiddleware
 from typing import List
 
+now = datetime.now()
+formatted_date = now.strftime("%B %d, %Y")
+formatted_time = now.strftime("%I:%M %p")
+
 
 # Initialize FastAPI app
 app = FastAPI()
@@ -107,13 +111,42 @@ def generate_report():
     except FileNotFoundError:
         return {"error": "Missing profile or pollution data"}
 
-    prompt = (
-        f"You are a health expert. Generate a detailed but simple health impact report for a {profile['age']} year old "
-        f"{profile['gender']} from {pollution['city']} with {profile['disease']}. "
-        f"Pollution levels: PM2.5={pollution['pm2_5']}, PM10={pollution['pm10']}, CO={pollution['co']}, "
-        f"NO₂={pollution['no2']}, O₃={pollution['o3']}. "
-        f"Explain short-term and long-term health effects, and suggest precautions."
-    )
+
+    prompt = f"""
+    Generate a health impact report in a structured prescription letter format. Follow this exact layout:
+
+    1. **Header (top)**
+       - Date: {current_date}
+       - Time: {current_time}
+       - Location: {pollution['city']}
+       - Name: {profile['name']}
+       - Age: {profile['age']}
+       - Gender: {profile['gender']}
+       - Health Condition: {profile['disease'] if profile['disease'] != 'none' else 'None'}
+
+    2. **Summary of Local Air Conditions (3 lines)**
+       - Summarize the pollution in the area using PM2.5: {pollution['pm2_5']}, PM10: {pollution['pm10']}, CO: {pollution['co']}, NO₂: {pollution['no2']}, O₃: {pollution['o3']}.
+       - Mention if levels are safe, moderate, or unsafe.
+       - Comment briefly on the air quality's typical effect in this region.
+
+    3. **Short-Term Effects (3 points)**
+       - Bullet points describing likely immediate health effects for a person with this profile in this area.
+
+    4. **Long-Term Effects (3 points)**
+       - Bullet points on possible chronic health issues over time.
+
+    5. **Safety Timeline**
+       - 3 Years: [risk level and expected symptoms]
+       - 5 Years: [risk level and expected symptoms]
+       - 7 Years: [risk level and expected symptoms]
+       - 10+ Years: [risk level and expected symptoms]
+
+    6. **Precautionary Measures (3 points)**
+       - Bullet points with actionable health and environmental safety tips.
+
+    Always keep the language clear, medically sound but simple, and maintain the formatting exactly as above.
+    """
+    
 
     headers = {
         "Authorization": f"Bearer {PERPLEXITY_API_KEY}",
@@ -166,7 +199,7 @@ class SoilParameter(BaseModel):
 @app.get("/get_soil/{city}", response_model=List[SoilParameter])
 async def get_soil(city: str):
     return [
-        {"parameter": "Nitrogen", "value": 45, "status": "Safe"},
+        {"parameter": "Nitrogen", "value": 4, "status": "Safe"},
         {"parameter": "Phosphorus", "value": 22, "status": "Safe"},
         {"parameter": "Lead", "value": 0.1, "status": "Unsafe"}
     ]

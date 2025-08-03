@@ -1,48 +1,80 @@
 /* Dashboard.css */
 
 .dashboard-container {
-  background-color: white;
-  padding: 2rem;
-  margin: 2rem auto;
-  max-width: 900px;
-  border-radius: 12px;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
-  font-family: 'Segoe UI', sans-serif;
+  background-color: #1c1c24;
+  padding: 40px;
+  margin: 40px auto;
+  max-width: 1200px;
+  border-radius: 16px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+  font-family: 'Inter', sans-serif;
+  color: #ffffff;
+  animation: fadeIn 0.5s ease-in-out;
 }
 
 .dashboard-title {
   text-align: center;
-  font-size: 1.8rem;
-  color: #3e5060; /* Primary Blue */
+  font-size: 2rem;
+  color: #3abff8; /* Cyan Blue */
   margin-bottom: 1.5rem;
+  font-weight: 700;
 }
 
 .dashboard-table {
   width: 100%;
   border-collapse: collapse;
-  overflow: hidden;
   border-radius: 12px;
+  overflow: hidden;
 }
 
 .dashboard-table thead {
-  background-color: #3e5060;
-  color: white;
+  background-color: #292932;
+  color: #ffffff;
 }
 
 .dashboard-table th,
 .dashboard-table td {
-  padding: 0.75rem 1rem;
+  padding: 14px 18px;
   text-align: center;
   font-size: 1rem;
-  border: 1px solid #e0e0e0;
+  border: 1px solid #2e2e38;
 }
 
 .dashboard-table tbody tr:nth-child(even) {
-  background-color: #f0f4f8;
+  background-color: #1f1f28;
 }
 
 .dashboard-table td:last-child {
   font-weight: bold;
   text-transform: uppercase;
-  color: #f08a24; /* Accent Orange for status */
+  color: #f59e0b; /* Amber status */
+}
+
+/* Animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .dashboard-container {
+    padding: 24px;
+  }
+
+  .dashboard-title {
+    font-size: 1.6rem;
+  }
+
+  .dashboard-table th,
+  .dashboard-table td {
+    font-size: 0.9rem;
+    padding: 10px;
+  }
 }

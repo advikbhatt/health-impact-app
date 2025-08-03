@@ -1,64 +1,94 @@
 /* PollutionInfo.css */
 
 .pollution-container {
-  background-color: white;
-  padding: 2rem;
-  margin: 2rem auto;
-  max-width: 800px;
-  border-radius: 12px;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
-  font-family: 'Segoe UI', sans-serif;
+  background-color: #1c1c24;
+  padding: 20px;
+  margin: 0 auto;
+  width: 100%;
+  max-width: 1800px;
+  min-height: 50vh;
+  box-sizing: border-box;
+  /* border-radius: 16px; */
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+  font-family: 'Inter', sans-serif;
+  color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .pollution-title {
   text-align: center;
-  font-size: 1.8rem;
-  margin-bottom: 1.5rem;
-  color: #3e5060; /* Primary Blue */
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 30px;
+  color: #ffffff;
 }
 
 .pollution-table {
   width: 100%;
   border-collapse: collapse;
-  margin-top: 1rem;
-  background-color: #f9f9f9;
+  background-color: #121218;
   border-radius: 12px;
   overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 }
 
 .pollution-table thead {
-  background-color: #3e5060;
-  color: white;
+  background-color: #2a2a34;
+  color: #ffffff;
 }
 
 .pollution-table th,
 .pollution-table td {
-  padding: 0.75rem 1rem;
+  padding: 16px;
   text-align: center;
   font-size: 1rem;
+  border-bottom: 1px solid #2a2a34;
 }
 
 .pollution-table tbody tr:nth-child(even) {
-  background-color: #f0f4f8;
+  background-color: #1c1c24;
+}
+
+.pollution-table tbody tr:nth-child(odd) {
+  background-color: #15151b;
 }
 
 .pollutant-name {
   font-weight: 600;
   text-transform: uppercase;
-  color: #3e5060;
+  color: #ffffff;
 }
 
 .value-good {
-  color: #2e7d32; /* Green for safe */
+  color: #4caf50;
   font-weight: 600;
 }
 
 .value-bad {
-  color: #d32f2f; /* Red for unsafe */
+  color: #f44336;
   font-weight: 600;
 }
 
 .limit-value {
-  color: #6c757d;
+  color: #b0b3b8;
   font-size: 0.95rem;
+}
+
+/* Responsive Styling */
+@media (max-width: 768px) {
+  .pollution-container {
+    padding: 20px;
+  }
+
+  .pollution-title {
+    font-size: 1.5rem;
+  }
+
+  .pollution-table th,
+  .pollution-table td {
+    padding: 12px;
+    font-size: 0.9rem;
+  }
 }
