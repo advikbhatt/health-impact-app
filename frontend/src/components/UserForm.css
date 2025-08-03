@@ -1,17 +1,27 @@
-/* UserForm.css */
+/* ----------- Global Reset ----------- */
+html, body {
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+  font-family: 'Inter', sans-serif;
+  background-color: #101016;
+}
 
+/* ----------- Main Layout ----------- */
 .user-form-wrapper {
   display: flex;
   min-height: 100vh;
   background-color: #101016;
-  font-family: 'Inter', sans-serif;
+  overflow-x: hidden;
 }
 
 .form-map-container {
   display: flex;
   width: 100%;
+  flex-wrap: wrap;
 }
 
+/* ----------- Form Section ----------- */
 .form-section {
   width: 50%;
   padding: 60px 40px;
@@ -20,6 +30,7 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
+  box-sizing: border-box;
 }
 
 .user-form-title {
@@ -72,22 +83,20 @@
   background-color: #1c1c24 !important;
   border: none !important;
   border-radius: 12px !important;
-  color: #000000 !important;
+  color: #ffffff !important;
   box-shadow: none !important;
   min-height: 42px;
 }
 
 .react-select__value-container {
   padding: 0 12px;
-  color: #000000;
+  color: #ffffff !important;
 }
 
-.react-select__single-value {
-  color: #000000 !important;
-}
-
-.react-select__input-container {
-  color: #000000 !important;
+.react-select__single-value,
+.react-select__input-container,
+.react-select__multi-value__label {
+  color: #ffffff !important;
 }
 
 .react-select__multi-value {
@@ -95,18 +104,14 @@
   border-radius: 8px;
 }
 
-.react-select__multi-value__label {
-  color: #000000 !important;
-}
-
 .react-select__multi-value__remove {
-  color: #000000 !important;
+  color: #ffffff !important;
   cursor: pointer;
 }
 
 .react-select__multi-value__remove:hover {
   background-color: #444 !important;
-  color: #000000 !important;
+  color: #ffffff !important;
 }
 
 .react-select__menu {
@@ -117,12 +122,12 @@
 
 .react-select__option {
   background-color: transparent !important;
-  color: #000000 !important;
+  color: #ffffff !important;
 }
 
 .react-select__option--is-focused {
   background-color: #2a2a34 !important;
-  color: #000000 !important;
+  color: #ffffff !important;
 }
 
 .react-select__indicator-separator {
@@ -130,7 +135,7 @@
 }
 
 .react-select__dropdown-indicator {
-  color: #000000 !important;
+  color: #ffffff !important;
 }
 
 /* ----------- Submit Button ----------- */
@@ -156,7 +161,7 @@ button[type="submit"]:hover {
   margin-top: 4px;
 }
 
-/* ----------- Dark Themed Map Section ----------- */
+/* ----------- Map Section ----------- */
 .map-section {
   width: 50%;
   padding: 60px 40px;
@@ -165,6 +170,7 @@ button[type="submit"]:hover {
   display: flex;
   flex-direction: column;
   justify-content: center;
+  box-sizing: border-box;
 }
 
 .map-title {
@@ -176,4 +182,72 @@ button[type="submit"]:hover {
   margin-top: 10px;
   border-radius: 12px;
   overflow: hidden;
+  width: 100%;
+  height: 100%;
+  min-height: 300px;
+}
+
+/* ----------- Mobile Styles ----------- */
+@media (max-width: 768px) {
+  .user-form-wrapper {
+    flex-direction: column;
+    overflow-x: hidden;
+  }
+
+  .form-map-container {
+    flex-direction: column;
+    width: 100%;
+    overflow-x: hidden;
+  }
+
+  .form-section,
+  .map-section {
+    width: 100% !important;
+    padding: 30px 20px;
+  }
+
+  .user-form-title {
+    font-size: 1.5rem;
+    text-align: center;
+  }
+
+  .instruction-text {
+    font-size: 0.75rem;
+    text-align: center;
+  }
+
+  .user-form {
+    gap: 10px;
+  }
+
+  .user-form label {
+    font-size: 0.9rem;
+  }
+
+  .user-form input,
+  .user-form select {
+    font-size: 0.95rem;
+    padding: 10px 12px;
+  }
+
+  .react-select__control {
+    font-size: 0.95rem;
+    width: 100% !important;
+  }
+
+  .map-title {
+    font-size: 1.25rem;
+    text-align: center;
+  }
+
+  .google-map {
+    height: 300px;
+    width: 100%;
+  }
+
+  button[type="submit"] {
+    font-size: 1rem;
+    padding: 10px;
+    width: 100%;
+  }
 }
