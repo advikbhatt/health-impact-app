@@ -9,7 +9,7 @@ const mapContainerStyle = {
   borderRadius: "12px",
 };
 
-const defaultCenter = { lat: 20.5937, lng: 78.9629 }; // Center of India
+const defaultCenter = { lat: 20.5937, lng: 78.9629 }; // India
 
 const UserForm = ({ onUserSaved }) => {
   const [form, setForm] = useState({
@@ -27,6 +27,27 @@ const UserForm = ({ onUserSaved }) => {
   const { isLoaded } = useJsApiLoader({
     googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API,
   });
+
+  useEffect(() => {
+    if ("geolocation" in navigator) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const coords = {
+            lat: position.coords.latitude,
+            lng: position.coords.longitude,
+          };
+          setCoordinates(coords);
+          fetchCityFromCoordinates(coords);
+        },
+        (error) => {
+          console.error("Geolocation error:", error);
+        },
+        { enableHighAccuracy: true }
+      );
+    } else {
+      console.warn("Geolocation not supported");
+    }
+  }, []);
 
   const handleChange = (e) => {
     const updatedForm = { ...form, [e.target.name]: e.target.value };
@@ -48,7 +69,6 @@ const UserForm = ({ onUserSaved }) => {
         const coords = { lat: parseFloat(lat), lng: parseFloat(lon) };
         setCoordinates(coords);
 
-        // Move map center
         if (mapRef) {
           mapRef.panTo(coords);
         }
@@ -72,7 +92,10 @@ const UserForm = ({ onUserSaved }) => {
 
       if (response.data.results.length > 0) {
         const components = response.data.results[0].address_components;
-        const cityComp = components.find((c) => c.types.includes("locality"));
+        const cityComp =
+          components.find((c) => c.types.includes("locality")) ||
+          components.find((c) => c.types.includes("administrative_area_level_2")) ||
+          components.find((c) => c.types.includes("administrative_area_level_1"));
         const city = cityComp ? cityComp.long_name : "Unknown";
         setForm((prev) => ({ ...prev, city }));
       }
@@ -110,20 +133,52 @@ const UserForm = ({ onUserSaved }) => {
   return (
     <div className="user-form-wrapper">
       <div className="form-map-container">
-        {/* Form */}
+        {/* Form Section */}
         <div className="form-section">
-          <h2 className="user-form-title">🧍 User Profile</h2>
+          <h2 className="user-form-title">🧍 Fill Out Your Profile</h2>
+          <p className="instruction-text">
+            Please provide accurate information for better environmental impact analysis.
+          </p>
           <form onSubmit={handleSubmit} className="user-form">
-            <input name="name" value={form.name} onChange={handleChange} placeholder="Name" required />
-            <input name="age" type="number" value={form.age} onChange={handleChange} placeholder="Age" required />
-            <input name="city" value={form.city} onChange={handleChange} placeholder="City" required />
+            <label htmlFor="name">Full Name</label>
+            <input
+              name="name"
+              value={form.name}
+              onChange={handleChange}
+              placeholder="Enter your full name"
+              required
+            />
 
+            <label htmlFor="age">Age</label>
+            <input
+              name="age"
+              type="number"
+              value={form.age}
+              onChange={handleChange}
+              placeholder="Enter your age"
+              required
+            />
+
+            <label htmlFor="city">City</label>
+            <input
+              name="city"
+              value={form.city}
+              onChange={handleChange}
+              placeholder="Start typing your city"
+              required
+            />
+            <p className="instruction-text">
+              Typing a city will auto-locate it on the map below.
+            </p>
+
+            <label htmlFor="gender">Gender</label>
             <select name="gender" value={form.gender} onChange={handleChange}>
               <option>Male</option>
               <option>Female</option>
               <option>Other</option>
             </select>
 
+            <label htmlFor="disease">Existing Disease (if any)</label>
             <select name="disease" value={form.disease} onChange={handleChange}>
               <option>None</option>
               <option>Asthma</option>
@@ -136,10 +191,19 @@ const UserForm = ({ onUserSaved }) => {
           </form>
         </div>
 
-        {/* Map */}
+        {/* Map Section */}
         {isLoaded && (
           <div className="map-section">
-            <p><strong>Coordinates:</strong> {coordinates ? `${coordinates.lat.toFixed(4)}, ${coordinates.lng.toFixed(4)}` : "Click or search to select"}</p>
+            <h3 className="map-title">📍 Select Your Exact Location</h3>
+            <p className="instruction-text">
+              You can click anywhere on the map to refine your location. This helps us fetch more accurate pollution data for your report.
+            </p>
+            <p>
+              <strong>Selected Coordinates:</strong>{" "}
+              {coordinates
+                ? `${coordinates.lat.toFixed(4)}, ${coordinates.lng.toFixed(4)}`
+                : "Fetching current location..."}
+            </p>
             <GoogleMap
               mapContainerStyle={mapContainerStyle}
               center={coordinates || defaultCenter}

@@ -1,86 +1,179 @@
+/* UserForm.css */
+
 .user-form-wrapper {
   display: flex;
-  flex-direction: column;
-  padding: 20px;
-  font-family: "Segoe UI", sans-serif;
-  background: #f8f9fa;
-  border-radius: 12px;
+  min-height: 100vh;
+  background-color: #101016;
+  font-family: 'Inter', sans-serif;
 }
 
 .form-map-container {
   display: flex;
-  gap: 20px;
-  flex-wrap: wrap;
+  width: 100%;
 }
 
 .form-section {
-  flex: 1;
-  min-width: 300px;
-}
-
-.map-section {
-  flex: 1;
-  min-height: 400px;
-  position: relative;
+  width: 50%;
+  padding: 60px 40px;
+  background-color: #101016;
+  color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .user-form-title {
-  font-size: 1.8rem;
-  margin-bottom: 20px;
-  color: #2c3e50;
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.instruction-text {
+  font-size: 0.85rem;
+  color: #999;
+  margin-bottom: 16px;
 }
 
 .user-form {
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  gap: 8px;
 }
 
-.form-group {
-  display: flex;
-  flex-direction: column;
+.user-form label {
+  font-size: 0.95rem;
+  font-weight: 500;
+  margin-bottom: 2px;
 }
 
-.form-group label {
-  margin-bottom: 5px;
-  font-weight: 600;
-  color: #34495e;
-}
-
-input, select, .multi-select {
-  padding: 8px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  font-size: 1rem;
-}
-
-.multi-select {
-  height: 100px;
-  background: #fff;
-}
-
-button {
-  padding: 10px;
-  background: #2ecc71;
-  color: white;
+.user-form input,
+.user-form select {
+  padding: 12px 14px;
+  background-color: #1c1c24;
   border: none;
-  border-radius: 6px;
+  border-radius: 12px;
+  color: #ffffff;
+  font-size: 1rem;
+  outline: none;
+  transition: background-color 0.2s ease;
+}
+
+.user-form input::placeholder {
+  color: #777;
+}
+
+.user-form input:focus,
+.user-form select:focus {
+  background-color: #292932;
+}
+
+/* ----------- react-select dark theme styling ----------- */
+.react-select__control {
+  background-color: #1c1c24 !important;
+  border: none !important;
+  border-radius: 12px !important;
+  color: #000000 !important;
+  box-shadow: none !important;
+  min-height: 42px;
+}
+
+.react-select__value-container {
+  padding: 0 12px;
+  color: #000000;
+}
+
+.react-select__single-value {
+  color: #000000 !important;
+}
+
+.react-select__input-container {
+  color: #000000 !important;
+}
+
+.react-select__multi-value {
+  background-color: #292932 !important;
+  border-radius: 8px;
+}
+
+.react-select__multi-value__label {
+  color: #000000 !important;
+}
+
+.react-select__multi-value__remove {
+  color: #000000 !important;
   cursor: pointer;
+}
+
+.react-select__multi-value__remove:hover {
+  background-color: #444 !important;
+  color: #000000 !important;
+}
+
+.react-select__menu {
+  background-color: #1c1c24 !important;
+  border-radius: 8px;
+  z-index: 10;
+}
+
+.react-select__option {
+  background-color: transparent !important;
+  color: #000000 !important;
+}
+
+.react-select__option--is-focused {
+  background-color: #2a2a34 !important;
+  color: #000000 !important;
+}
+
+.react-select__indicator-separator {
+  display: none;
+}
+
+.react-select__dropdown-indicator {
+  color: #000000 !important;
+}
+
+/* ----------- Submit Button ----------- */
+button[type="submit"] {
+  padding: 12px;
+  background: #007bff;
+  border: none;
+  border-radius: 12px;
+  color: white;
+  font-size: 1rem;
   font-weight: 600;
+  cursor: pointer;
   transition: background 0.3s ease;
 }
 
-button:hover {
-  background: #27ae60;
+button[type="submit"]:hover {
+  background: #0056d4;
 }
 
 .user-form-error {
-  color: red;
+  color: #ff4d4f;
   font-size: 0.9rem;
+  margin-top: 4px;
 }
 
-.map-instruction {
+/* ----------- Dark Themed Map Section ----------- */
+.map-section {
+  width: 50%;
+  padding: 60px 40px;
+  background-color: #121218;
+  color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.map-title {
+  font-size: 1.5rem;
   margin-bottom: 10px;
-  color: #555;
-  font-size: 0.95rem;
+}
+
+.google-map {
+  margin-top: 10px;
+  border-radius: 12px;
+  overflow: hidden;
 }
