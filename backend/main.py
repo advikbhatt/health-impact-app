@@ -8,10 +8,11 @@ import firebase_admin
 from firebase_admin import credentials, firestore
 from fastapi.middleware.cors import CORSMiddleware
 from typing import List
-
-now = datetime.now()
-formatted_date = now.strftime("%B %d, %Y")
-formatted_time = now.strftime("%I:%M %p")
+from fastapi import APIRouter
+import razorpay
+from fastapi import Request
+import hmac, hashlib
+from fastapi.responses import JSONResponse
 
 
 # Initialize FastAPI app
@@ -53,16 +54,13 @@ if not OPENWEATHER_API_KEY or not PERPLEXITY_API_KEY:
     raise EnvironmentError("Missing OPENWEATHER_API_KEY or PERPLEXITY_API_KEY in environment variables.")
 
 
-
-# CORS Middleware for frontend-backend communication
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Use specific origin in production
+    allow_origins=["*"],  
     allow_methods=["*"],
     allow_headers=["*"]
 )
 
-# Pydantic models for data validation
 class UserProfile(BaseModel):
     name: str
     age: int
@@ -80,7 +78,6 @@ class PollutionData(BaseModel):
     no2: float
     o3: float
 
-# Save user data to Firebase and local file
 @app.post("/save_user")
 def save_user(data: UserProfile):
     db.collection("users").add(data.dict())
@@ -89,7 +86,6 @@ def save_user(data: UserProfile):
         json.dump(data.dict(), f)
     return {"msg": "User saved"}
 
-# Save pollution data to Firebase and local file
 @app.post("/save_pollution")
 def save_pollution(data: PollutionData):
     db.collection("pollution").add(data.dict())
@@ -116,8 +112,6 @@ def generate_report():
     Generate a health impact report in a structured prescription letter format. Follow this exact layout:
 
     1. **Header (top)**
-       - Date: {current_date}
-       - Time: {current_time}
        - Location: {pollution['city']}
        - Name: {profile['name']}
        - Age: {profile['age']}
@@ -203,3 +197,29 @@ async def get_soil(city: str):
         {"parameter": "Phosphorus", "value": 22, "status": "Safe"},
         {"parameter": "Lead", "value": 0.1, "status": "Unsafe"}
     ]
+
+router = APIRouter()
+razorpay_client = razorpay.Client(auth=(os.getenv("RAZORPAY_KEY_ID"), os.getenv("RAZORPAY_SECRET")))
+
+@router.post("/create_order")
+def create_order(payload: dict):
+    amount = payload["amount"]
+    currency = payload["currency"]
+    payment = razorpay_client.order.create(dict(amount=amount, currency=currency))
+    return JSONResponse(content=payment)
+
+
+@router.post("/verify_payment")
+async def verify_payment(request: Request):
+    data = await request.json()
+    secret = os.getenv("RAZORPAY_SECRET")
+    
+    body = f"{data['razorpay_order_id']}|{data['razorpay_payment_id']}"
+    generated_signature = hmac.new(
+        secret.encode(), body.encode(), hashlib.sha256
+    ).hexdigest()
+    
+    if generated_signature == data['razorpay_signature']:
+        return JSONResponse(content={"status": "success"})
+    else:
+        return JSONResponse(content={"status": "failure"})

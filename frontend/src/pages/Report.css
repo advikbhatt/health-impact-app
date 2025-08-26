@@ -89,3 +89,27 @@
     font-size: 0.95rem;
   }
 }
+.payment-box {
+  padding: 1.5rem;
+  border-radius: 12px;
+  background-color: #1e1e1e;
+  color: #fff;
+  text-align: center;
+  box-shadow: 0 0 10px rgba(138, 138, 138, 0.4);
+}
+
+.pay-btn {
+  margin-top: 1rem;
+  background: #f08a24;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: bold;
+  color: #fff;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.pay-btn:hover {
+  background: #d56d13;
+}

@@ -25,9 +25,10 @@ const UserForm = ({ onUserSaved }) => {
   const [mapRef, setMapRef] = useState(null);
 
   const { isLoaded } = useJsApiLoader({
-    googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API,
+    googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API, // ✅ must be set in .env
   });
 
+  // Try to get user’s current location
   useEffect(() => {
     if ("geolocation" in navigator) {
       navigator.geolocation.getCurrentPosition(
@@ -39,13 +40,15 @@ const UserForm = ({ onUserSaved }) => {
           setCoordinates(coords);
           fetchCityFromCoordinates(coords);
         },
-        (error) => {
-          console.error("Geolocation error:", error);
+        (err) => {
+          console.warn("No user location provided:", err.message);
+          setCoordinates(defaultCenter); // fallback to India
         },
         { enableHighAccuracy: true }
       );
     } else {
       console.warn("Geolocation not supported");
+      setCoordinates(defaultCenter);
     }
   }, []);
 
@@ -58,6 +61,7 @@ const UserForm = ({ onUserSaved }) => {
     }
   };
 
+  // Forward geocoding: City -> Coordinates
   const fetchCoordinates = async (cityName) => {
     try {
       const res = await axios.get("https://nominatim.openstreetmap.org/search", {
@@ -78,6 +82,7 @@ const UserForm = ({ onUserSaved }) => {
     }
   };
 
+  // Reverse geocoding: Coordinates -> City
   const fetchCityFromCoordinates = async ({ lat, lng }) => {
     try {
       const response = await axios.get(
@@ -94,8 +99,12 @@ const UserForm = ({ onUserSaved }) => {
         const components = response.data.results[0].address_components;
         const cityComp =
           components.find((c) => c.types.includes("locality")) ||
-          components.find((c) => c.types.includes("administrative_area_level_2")) ||
-          components.find((c) => c.types.includes("administrative_area_level_1"));
+          components.find((c) =>
+            c.types.includes("administrative_area_level_2")
+          ) ||
+          components.find((c) =>
+            c.types.includes("administrative_area_level_1")
+          );
         const city = cityComp ? cityComp.long_name : "Unknown";
         setForm((prev) => ({ ...prev, city }));
       }
@@ -115,7 +124,7 @@ const UserForm = ({ onUserSaved }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const { name, age, city } = form;
-    if (!name || !age || !city) {
+    if (!name || !age ) {
       setError("All fields are required.");
       return;
     }
