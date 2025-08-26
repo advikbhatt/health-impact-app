@@ -5,3 +5,4 @@ firebase-admin
 requests
 fitz
 razorpay
+setuptools 
