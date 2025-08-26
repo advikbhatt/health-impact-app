@@ -1,0 +1,45 @@
+/* ----------- Terms Page Styles ----------- */
+
+.terms-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px 20px;
+  background-color: #f4f4f4; /* Light gray background */
+  min-height: 100vh;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Page title */
+.terms-title {
+  font-size: 2rem;
+  font-weight: bold;
+  margin-bottom: 30px;
+  color: #222;
+  text-align: center;
+}
+
+/* Word-like page styling */
+.terms-doc {
+  width: 80%;
+  max-width: 900px;
+  height: 85vh;
+  background: #ffffff;
+  border-radius: 6px;
+  box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.15);
+  padding: 30px;
+  overflow-y: auto;
+  border: 1px solid #dcdcdc;
+}
+
+/* Scrollbar styling for Word feel */
+.terms-doc::-webkit-scrollbar {
+  width: 10px;
+}
+.terms-doc::-webkit-scrollbar-thumb {
+  background-color: #b5b5b5;
+  border-radius: 5px;
+}
+.terms-doc::-webkit-scrollbar-track {
+  background: #f0f0f0;
+}

@@ -1,26 +1,17 @@
-import React, { useState } from "react";
-import UserForm from "../src/components/UserForm";
-import PollutionInfo from "../src/components/PollutionInfo";
-import WaterInfo from "../src/components/WaterInfo"; 
-import SoilInfo from "../src/components/SoilInfo";    
-import Report from "../src/pages/Report";
-import Footer from "../src/components/Footer"; 
-import DetailInfo from "../src/components/DetailInfo"; 
+import React from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Home from "./Home";
+import Terms from "./pages/Terms";
 
-const Home = () => {
-  const [user, setUser] = useState(null);
-
+const App = () => {
   return (
-    <div className="min-h-screen p-4 flex flex-col">
-      <DetailInfo />   
-      <UserForm onUserSaved={setUser} />
-      <Report user={user} />
-      <PollutionInfo user={user} />
-      <WaterInfo user={user} />
-      {/* <SoilInfo user={user} /> */}
-      <Footer />
-    </div>
+    <Router>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/terms" element={<Terms />} />
+      </Routes>
+    </Router>
   );
 };
 
-export default Home;
+export default App;
