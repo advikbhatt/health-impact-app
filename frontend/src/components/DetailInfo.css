@@ -1,0 +1,114 @@
+/* Universal Reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Inter", sans-serif;
+}
+
+/* Page Background */
+body {
+  background-color: #bfbfbf; 
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  min-height: 100vh;
+  padding: 40px 20px;
+}
+
+/* Centered Container */
+form, 
+.detail-section {
+  background-color: #bfbfbf;
+  max-width: 480px;
+  width: 100%;
+  padding: 20px;
+  margin: 0 auto;               /* keeps centered horizontally */
+  display: flex;
+  flex-direction: column;
+  align-items: center;           /* centers all children */
+  text-align: center;            /* keeps headings and text centered */
+}
+
+/* Headings */
+h1, h2, h3 {
+  color: #222;
+  margin-bottom: 12px;
+  width: 100%;
+}
+
+/* Paragraphs */
+p {
+  font-size: 0.9rem;
+  color: #333;
+  margin-bottom: 16px;
+  width: 100%;
+}
+
+/* Labels */
+label {
+  color: #222;
+  font-weight: 500;
+  margin: 10px 0 5px;
+  align-self: flex-start;        /* left-align labels inside centered form */
+}
+
+/* Inputs & Selects */
+input, select, textarea {
+  width: 100%;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  background-color: #fff;
+  font-size: 1rem;
+  color: #222;
+  margin-bottom: 14px;
+  outline: none;
+  transition: border 0.2s ease-in-out;
+}
+
+input:focus, select:focus, textarea:focus {
+  border: 1px solid #222;
+}
+
+/* Button */
+button, .submit-btn {
+  width: 100%;                  /* full-width but centered */
+  background-color: #FFD500; 
+  color: #000;
+  font-weight: 600;
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-top: 12px;
+  transition: background-color 0.3s ease;
+}
+
+button:hover, .submit-btn:hover {
+  background-color: #e6c200; 
+}
+
+/* Accent Section */
+.location-section {
+  margin-top: 20px;
+  font-weight: bold;
+  color: #E63946; /* pink/red accent */
+  font-size: 1rem;
+  text-align: center;
+  width: 100%;
+}
+/* Feature / List Styling */
+ul {
+  list-style: none;   /* removes dots */
+  padding: 0;
+  margin: 0;
+}
+
+ul li {
+  margin-bottom: 10px;
+  color: #222;
+  font-size: 0.95rem;
+  text-align: left;
+  padding-left: 4px; /* small indent for neatness */
+}

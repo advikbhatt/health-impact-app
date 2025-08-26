@@ -52,7 +52,7 @@ const PollutionInfo = ({ user }) => {
 
   return (
     <div className="pollution-container">
-      <h2 className="pollution-title">🌍 Pollution in {pollution.city}</h2>
+      <h2 className="pollution-title">Pollution in {pollution.city}</h2>
       <table className="pollution-table">
         <thead>
           <tr>

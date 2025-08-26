@@ -144,7 +144,7 @@ const UserForm = ({ onUserSaved }) => {
       <div className="form-map-container">
         {/* Form Section */}
         <div className="form-section">
-          <h2 className="user-form-title">🧍 Fill Out Your Profile</h2>
+          <h2 className="user-form-title"> Fill Out Your Profile</h2>
           <p className="instruction-text">
             Please provide accurate information for better environmental impact analysis.
           </p>

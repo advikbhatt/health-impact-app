@@ -1,62 +1,126 @@
-/* Report.css */
-
+/* ----------- Report Container ----------- */
 .report-container {
-  background-color: #1c1c24;
+  background: linear-gradient(180deg, #1f1f1f 0%, #b6b6b6 100%);
   padding: 40px;
-  margin: 40px auto;
   max-width: 1200px;
-  border-radius: 16px;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+  margin: 0 auto;
   font-family: 'Inter', sans-serif;
-  color: #ffffff;
-  animation: fadeIn 0.5s ease-in-out;
+  color: #333;
+  animation: fadeIn 0.6s ease-in-out;
+  /* border-radius: 16px; */
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
 }
 
+/* ----------- Title ----------- */
 .report-title {
   text-align: center;
   font-size: 2rem;
   font-weight: 700;
-  color: #3abff8;
-  margin-bottom: 1.5rem;
+  color: #ffffff; /* Black title for readability */
+  margin-bottom: 1.2rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  position: relative;
 }
 
+.report-title::after {
+  content: "";
+  display: block;
+  width: 60px;
+  height: 4px;
+  background: #FFDA29; /* Yellow underline */
+  margin: 10px auto 0;
+  border-radius: 2px;
+}
+
+/* ----------- Report Content ----------- */
 .report-content {
   font-size: 1rem;
-  line-height: 1.75;
-  background-color: #121218;
-  color: #e5e7eb;
+  line-height: 1.7;
+  background-color: #ffffff; /* White card */
+  color: #333; /* Dark gray text */
   padding: 1.5rem;
+  border-left: 5px solid #FFDA29; /* Yellow accent stripe */
   border-radius: 12px;
-  border-left: 6px solid #f59e0b; /* Amber accent stripe */
   white-space: pre-wrap;
   word-wrap: break-word;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
+.report-content:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+}
+
+/* ----------- Status Message ----------- */
 .report-status {
   text-align: center;
-  color: #9ca3af;
+  color: #000;
   font-style: italic;
   margin-top: 1.5rem;
   padding: 1rem;
-  font-size: 0.95rem;
+  font-size: 1rem;
+  border-radius: 10px;
+  background-color: #fff9d7; /* Light yellow background */
+  border: 1px solid #FFDA29;
 }
 
+/* ----------- Error Message ----------- */
 .report-error {
   text-align: center;
-  color: #ef4444;
+  color: #d93025;
   font-weight: 600;
   margin-top: 1.5rem;
+  font-size: 1rem;
+  background-color: #ffe5e5;
+  padding: 0.8rem;
+  border-radius: 10px;
+  border: 1px solid #ffb3b3;
 }
 
+/* ----------- Placeholder ----------- */
 .report-placeholder {
   text-align: center;
-  color: #6b7280;
+  color: #555;
   margin-top: 2rem;
   font-style: italic;
   font-size: 1rem;
+  opacity: 0.85;
 }
 
-/* Animation */
+/* ----------- Payment Section ----------- */
+.payment-box {
+  margin-top: 2rem;
+  padding: 1.5rem;
+  background-color: #ffffff;
+  color: #333;
+  text-align: center;
+  border: 2px solid #FFDA29;
+  border-radius: 14px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+}
+
+.pay-btn {
+  margin-top: 1rem;
+  background: #FFDA29;
+  border: none;
+  padding: 12px 24px;
+  font-weight: 700;
+  color: #000000;
+  cursor: pointer;
+  border-radius: 10px;
+  transition: all 0.3s ease;
+}
+
+.pay-btn:hover {
+  background: #000000;
+  color: #FFDA29;
+  transform: scale(1.03);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+/* ----------- Animations ----------- */
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -68,7 +132,7 @@
   }
 }
 
-/* Responsive */
+/* ----------- Responsive ----------- */
 @media (max-width: 768px) {
   .report-container {
     padding: 24px;
@@ -86,30 +150,6 @@
   .report-status,
   .report-placeholder,
   .report-error {
-    font-size: 0.95rem;
+    font-size: 0.9rem;
   }
-}
-.payment-box {
-  padding: 1.5rem;
-  border-radius: 12px;
-  background-color: #1e1e1e;
-  color: #fff;
-  text-align: center;
-  box-shadow: 0 0 10px rgba(138, 138, 138, 0.4);
-}
-
-.pay-btn {
-  margin-top: 1rem;
-  background: #f08a24;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 8px;
-  font-weight: bold;
-  color: #fff;
-  cursor: pointer;
-  transition: 0.3s;
-}
-
-.pay-btn:hover {
-  background: #d56d13;
 }

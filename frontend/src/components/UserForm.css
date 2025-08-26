@@ -4,29 +4,37 @@ html, body {
   padding: 0;
   overflow-x: hidden;
   font-family: 'Inter', sans-serif;
-  background-color: #101016;
+  background-color: #4d4d4d; /* Light Gray Background for modern feel */
+  color: #333;
+  line-height: 1.6;
 }
 
 /* ----------- Main Layout ----------- */
 .user-form-wrapper {
   display: flex;
   min-height: 100vh;
-  background-color: #101016;
-  overflow-x: hidden;
+  background-color: #1f1f1f ;
+  justify-content: center;
+  align-items: center;
+  padding: 0px;
 }
 
 .form-map-container {
   display: flex;
-  width: 100%;
   flex-wrap: wrap;
+  background: #464646;
+  /* border-radius: 16px; */
+  box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+  overflow: hidden;
+  width: 100%;
+  max-width: 1200px;
 }
 
 /* ----------- Form Section ----------- */
 .form-section {
   width: 50%;
-  padding: 60px 40px;
-  background-color: #101016;
-  color: #ffffff;
+  padding: 40px;
+  background: #b6b6b6;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -36,98 +44,110 @@ html, body {
 .user-form-title {
   font-size: 2rem;
   font-weight: 700;
-  margin-bottom: 10px;
+  margin-bottom: 12px;
+  color: #333;
 }
 
 .instruction-text {
-  font-size: 0.85rem;
-  color: #999;
-  margin-bottom: 16px;
+  font-size: 0.95rem;
+  color: #666;
+  margin-bottom: 20px;
 }
 
 .user-form {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 12px;
 }
 
 .user-form label {
-  font-size: 0.95rem;
-  font-weight: 500;
-  margin-bottom: 2px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-bottom: 4px;
+  color: #333;
 }
 
 .user-form input,
 .user-form select {
   padding: 12px 14px;
-  background-color: #1c1c24;
-  border: none;
-  border-radius: 12px;
-  color: #ffffff;
+  background-color: #fff;
+  border: 2px solid #ddd;
+  border-radius: 10px;
   font-size: 1rem;
+  color: #333;
   outline: none;
-  transition: background-color 0.2s ease;
+  transition: all 0.3s ease;
 }
 
 .user-form input::placeholder {
-  color: #777;
+  color: #888;
 }
 
 .user-form input:focus,
 .user-form select:focus {
-  background-color: #292932;
+  border-color: #FFDA29;
+  background-color: #fffef5;
+  box-shadow: 0 0 0 4px rgba(255,218,41,0.2);
 }
 
-/* ----------- react-select dark theme styling ----------- */
+/* ----------- react-select theme styling ----------- */
 .react-select__control {
-  background-color: #1c1c24 !important;
-  border: none !important;
-  border-radius: 12px !important;
-  color: #ffffff !important;
+  background-color: #fff !important;
+  border: 2px solid #ddd !important;
+  border-radius: 10px !important;
+  color: #333 !important;
   box-shadow: none !important;
   min-height: 42px;
+  transition: all 0.3s ease;
+}
+
+.react-select__control--is-focused {
+  border-color: #FFDA29 !important;
+  box-shadow: 0 0 0 4px rgba(255,218,41,0.2) !important;
 }
 
 .react-select__value-container {
   padding: 0 12px;
-  color: #ffffff !important;
+  color: #333 !important;
 }
 
 .react-select__single-value,
 .react-select__input-container,
 .react-select__multi-value__label {
-  color: #ffffff !important;
+  color: #333 !important;
 }
 
 .react-select__multi-value {
-  background-color: #292932 !important;
-  border-radius: 8px;
+  background-color: #FFDA29 !important;
+  border-radius: 6px;
+  color: #000 !important;
 }
 
 .react-select__multi-value__remove {
-  color: #ffffff !important;
+  color: #000 !important;
   cursor: pointer;
 }
 
 .react-select__multi-value__remove:hover {
-  background-color: #444 !important;
-  color: #ffffff !important;
+  background-color: #000 !important;
+  color: #FFDA29 !important;
 }
 
 .react-select__menu {
-  background-color: #1c1c24 !important;
+  background-color: #fff !important;
+  border: 2px solid #ddd !important;
   border-radius: 8px;
-  z-index: 10;
+  z-index: 20;
 }
 
 .react-select__option {
   background-color: transparent !important;
-  color: #ffffff !important;
+  color: #333 !important;
 }
 
 .react-select__option--is-focused {
-  background-color: #2a2a34 !important;
-  color: #ffffff !important;
+  background-color: #FFDA29 !important;
+  color: #000 !important;
 }
 
 .react-select__indicator-separator {
@@ -135,28 +155,30 @@ html, body {
 }
 
 .react-select__dropdown-indicator {
-  color: #ffffff !important;
+  color: #333 !important;
 }
 
 /* ----------- Submit Button ----------- */
 button[type="submit"] {
-  padding: 12px;
-  background: #007bff;
+  padding: 14px;
+  background: #FFDA29;
   border: none;
-  border-radius: 12px;
-  color: white;
+  border-radius: 10px;
+  color: #000;
   font-size: 1rem;
-  font-weight: 600;
+  font-weight: 700;
   cursor: pointer;
-  transition: background 0.3s ease;
+  transition: all 0.3s ease;
 }
 
 button[type="submit"]:hover {
-  background: #0056d4;
+  background: #000;
+  color: #FFDA29;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
 }
 
 .user-form-error {
-  color: #ff4d4f;
+  color: #e74c3c;
   font-size: 0.9rem;
   margin-top: 4px;
 }
@@ -164,9 +186,9 @@ button[type="submit"]:hover {
 /* ----------- Map Section ----------- */
 .map-section {
   width: 50%;
-  padding: 60px 40px;
-  background-color: #121218;
-  color: #ffffff;
+  padding: 10px;
+  background: linear-gradient(0deg, #1f1f1f 0%, #b6b6b6 100%);
+  color: #fff;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -175,79 +197,64 @@ button[type="submit"]:hover {
 
 .map-title {
   font-size: 1.5rem;
-  margin-bottom: 10px;
+  margin-bottom: 16px;
+  font-weight: 700;
+  color: #000000;
 }
 
 .google-map {
   margin-top: 10px;
+  border: 2px solid #FFDA29;
   border-radius: 12px;
   overflow: hidden;
   width: 100%;
   height: 100%;
   min-height: 300px;
+  box-shadow: 0 6px 15px rgba(0,0,0,0.2);
 }
 
 /* ----------- Mobile Styles ----------- */
 @media (max-width: 768px) {
-  .user-form-wrapper {
-    flex-direction: column;
-    overflow-x: hidden;
-  }
-
   .form-map-container {
     flex-direction: column;
     width: 100%;
-    overflow-x: hidden;
   }
 
   .form-section,
   .map-section {
     width: 100% !important;
-    padding: 30px 20px;
+    padding: 10px;
   }
-
+  .user-form{
+    gap: 1px;
+  }
   .user-form-title {
-    font-size: 1.5rem;
+    font-size: 1.3rem;
     text-align: center;
+    margin: 0px;
   }
 
   .instruction-text {
-    font-size: 0.75rem;
+    font-size: 0.55rem;
     text-align: center;
-  }
-
-  .user-form {
-    gap: 10px;
-  }
-
-  .user-form label {
-    font-size: 0.9rem;
-  }
-
-  .user-form input,
-  .user-form select {
-    font-size: 0.95rem;
-    padding: 10px 12px;
-  }
-
-  .react-select__control {
-    font-size: 0.95rem;
-    width: 100% !important;
+    
+    margin: 0px;
   }
 
   .map-title {
-    font-size: 1.25rem;
+    font-size: 1.2rem;
     text-align: center;
+    margin: 3px;
   }
 
   .google-map {
-    height: 300px;
+    height: 200px;
     width: 100%;
   }
 
   button[type="submit"] {
     font-size: 1rem;
-    padding: 10px;
+    padding: 12px;
     width: 100%;
   }
 }
