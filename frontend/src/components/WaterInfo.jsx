@@ -8,11 +8,10 @@ import water6 from "../components/data/water/6.json";
 
 import "./WaterInfo.css";
 
-const allJson = [water1,water2,water3, water4,water5,water6];
+const allJson = [water1, water2, water3, water4, water5, water6];
 
 const extractAllRows = () => {
   const allRows = [];
-
   allJson.forEach((file) => {
     file.pages?.forEach((page) => {
       page.tables?.forEach((table) => {
@@ -22,7 +21,6 @@ const extractAllRows = () => {
       });
     });
   });
-
   return allRows;
 };
 
@@ -32,11 +30,19 @@ const WaterInfo = ({ user }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (!user) {
+      // No user yet, do not load data
+      setLoading(false);
+      return;
+    }
+
+    setLoading(true);
+
     try {
       const allRows = extractAllRows();
-
       if (allRows.length < 5) {
         console.warn("Insufficient header rows.");
+        setLoading(false);
         return;
       }
 
@@ -58,13 +64,6 @@ const WaterInfo = ({ user }) => {
       setHeaders(headerRow);
 
       const dataRows = allRows.slice(4);
-
-      if (!user?.city && !user?.state) {
-        console.warn("No user location provided.");
-        setLoading(false);
-        return;
-      }
-
       const locationQuery = (user.city || user.state || "").toLowerCase();
 
       const matchedRow = dataRows.find((row) => {
@@ -81,6 +80,8 @@ const WaterInfo = ({ user }) => {
           }
         });
         setMatchingData(data);
+      } else {
+        setMatchingData(null);
       }
 
       setLoading(false);
@@ -90,14 +91,21 @@ const WaterInfo = ({ user }) => {
     }
   }, [user]);
 
+  // Show info message if no user yet
+  if (!user) {
+    return (
+      <div className="info-text">
+
+      </div>
+    );
+  }
+
   return (
-    <div className="water-info-container">
+    <div className="water-info-container fade-in">
       <h3>Water Quality</h3>
 
       {loading ? (
         <p>Loading water quality data...</p>
-      ) : !user?.city && !user?.state ? (
-        <p>Please enter your city or state to view data.</p>
       ) : !matchingData ? (
         <p>No matching water data found for <b>{user.city || user.state}</b>.</p>
       ) : (

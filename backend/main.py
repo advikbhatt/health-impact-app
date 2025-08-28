@@ -13,6 +13,10 @@ import razorpay
 from fastapi import Request
 import hmac, hashlib
 from fastapi.responses import JSONResponse
+import datetime
+from typing import Optional
+from pydantic import BaseModel
+from fastapi import Query
 
 
 # Initialize FastAPI app
@@ -198,28 +202,3 @@ async def get_soil(city: str):
         {"parameter": "Lead", "value": 0.1, "status": "Unsafe"}
     ]
 
-router = APIRouter()
-razorpay_client = razorpay.Client(auth=(os.getenv("RAZORPAY_KEY_ID"), os.getenv("RAZORPAY_SECRET")))
-
-@router.post("/create_order")
-def create_order(payload: dict):
-    amount = payload["amount"]
-    currency = payload["currency"]
-    payment = razorpay_client.order.create(dict(amount=amount, currency=currency))
-    return JSONResponse(content=payment)
-
-
-@router.post("/verify_payment")
-async def verify_payment(request: Request):
-    data = await request.json()
-    secret = os.getenv("RAZORPAY_SECRET")
-    
-    body = f"{data['razorpay_order_id']}|{data['razorpay_payment_id']}"
-    generated_signature = hmac.new(
-        secret.encode(), body.encode(), hashlib.sha256
-    ).hexdigest()
-    
-    if generated_signature == data['razorpay_signature']:
-        return JSONResponse(content={"status": "success"})
-    else:
-        return JSONResponse(content={"status": "failure"})

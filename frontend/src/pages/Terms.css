@@ -1,38 +1,65 @@
-/* ----------- Terms Page Styles ----------- */
+/* ----------- Reset body margin ----------- */
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
 
+/* ----------- Terms Page Styles ----------- */
 .terms-container {
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: flex-start;
   padding: 40px 20px;
-  background-color: #f4f4f4; /* Light gray background */
-  min-height: 100vh;
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  width: 100%;               /* Full screen width */
+  min-height: 100vh;         /* Full screen height */
+  background: linear-gradient(180deg, #f4f4f4 0%, #dcdcdc 100%);
+  box-sizing: border-box;
 }
 
-/* Page title */
+/* Page Title */
 .terms-title {
   font-size: 2rem;
   font-weight: bold;
   margin-bottom: 30px;
   color: #222;
   text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  position: relative;
 }
 
-/* Word-like page styling */
+.terms-title::after {
+  content: "";
+  display: block;
+  width: 60px;
+  height: 4px;
+  background: #FFDA29; /* Yellow underline (matches your theme) */
+  margin: 10px auto 0;
+  border-radius: 2px;
+}
+
+/* Word-like document box */
 .terms-doc {
-  width: 80%;
-  max-width: 900px;
-  height: 85vh;
+  width: 100%;
+  max-width: 900px;     /* Prevent text from being too wide */
+  height: 80vh;         /* Scrollable doc inside viewport */
   background: #ffffff;
-  border-radius: 6px;
-  box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.15);
+  border-radius: 10px;
+  box-shadow: 0px 6px 18px rgba(0, 0, 0, 0.15);
   padding: 30px;
   overflow-y: auto;
   border: 1px solid #dcdcdc;
+  line-height: 1.6;
+  font-size: 1rem;
+  color: #333;
+  animation: fadeIn 0.6s ease-in-out;
 }
 
-/* Scrollbar styling for Word feel */
+/* Scrollbar styling for "Word feel" */
 .terms-doc::-webkit-scrollbar {
   width: 10px;
 }
@@ -42,4 +69,57 @@
 }
 .terms-doc::-webkit-scrollbar-track {
   background: #f0f0f0;
+}
+
+/* ----------- Headings inside document ----------- */
+.terms-doc h2 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-top: 1.5rem;
+  margin-bottom: 0.5rem;
+  color: #111;
+  border-left: 4px solid #FFDA29;
+  padding-left: 8px;
+}
+
+.terms-doc p,
+.terms-doc ul {
+  margin-bottom: 1rem;
+}
+
+.terms-doc ul {
+  padding-left: 20px;
+}
+
+/* ----------- Responsive ----------- */
+@media (max-width: 768px) {
+  .terms-container {
+    padding: 20px;
+  }
+
+  .terms-title {
+    font-size: 1.6rem;
+  }
+
+  .terms-doc {
+    padding: 20px;
+    height: 70vh;
+    font-size: 0.95rem;
+  }
+
+  .terms-doc h2 {
+    font-size: 1.1rem;
+  }
+}
+
+/* ----------- Animation ----------- */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }

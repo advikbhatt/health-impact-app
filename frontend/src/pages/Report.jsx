@@ -1,71 +1,69 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
+import ReactMarkdown from "react-markdown";
+import { getFirestore, doc, updateDoc, arrayUnion } from "firebase/firestore";
+import { initializeApp } from "firebase/app";
+import { saveAs } from "file-saver";
 import "./Report.css";
 
+// --- Initialize Firebase ---
+const firebaseConfig = {
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
 const Report = ({ user }) => {
-  const [report, setReport] = useState("");
+  const [report, setReport] = useState("# Health Report\n\nWaiting for data...");
   const [loading, setLoading] = useState(false);
-  const [paid, setPaid] = useState(false);
   const [error, setError] = useState("");
 
-  const loadRazorpay = () => {
-    const script = document.createElement("script");
-    script.src = "https://checkout.razorpay.com/v1/checkout.js";
-    script.onload = startPayment;
-    script.onerror = () => alert("Failed to load Razorpay SDK.");
-    document.body.appendChild(script);
+  const cleanReport = (text) => {
+    if (!text) return "";
+    return text.replace(/<think>[\s\S]*?<\/think>/gi, "").trim();
   };
 
-  const startPayment = async () => {
-    try {
-      const res = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/create_order`, {
-        amount: 5 * 100, // ₹5 in paise
-        currency: "INR",
-      });
-
-      const options = {
-        key: import.meta.env.VITE_RAZORPAY_KEY,
-        amount: res.data.amount,
-        currency: res.data.currency,
-        order_id: res.data.id,
-        name: "AI Health Report",
-        description: "Pay ₹5 to unlock report",
-        handler: async (response) => {
-          const verify = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/verify_payment`, response);
-          if (verify.data.status === "success") {
-            setPaid(true);
-            fetchReport();
-          } else {
-            setError("❌ Payment verification failed.");
-          }
-        },
-        prefill: {
-          name: user.name,
-          email: "user@example.com", // Optional
-          contact: "9999999999",     // Optional
-        },
-        theme: { color: "#f08a24" },
-      };
-
-      const paymentObject = new window.Razorpay(options);
-      paymentObject.open();
-    } catch (err) {
-      console.error(err);
-      setError("❌ Payment initiation failed.");
-    }
-  };
-
+  // --- Fetch report and automatically save to Firebase ---
   const fetchReport = async () => {
     setLoading(true);
+    setError("");
     try {
       const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/generate_report`);
-      setReport(res.data?.report || "⚠️ No content returned from AI.");
-    } catch {
-      setError("⚠️ Failed to fetch health report.");
+      const cleaned = cleanReport(res.data?.report);
+      setReport(cleaned || "⚠️ No content returned from AI.");
+
+      // Auto-save to Firebase
+      if (user?.id) {
+        const reportName = `report_${new Date().toISOString()}`;
+        const userRef = doc(db, "users", user.id);
+        await updateDoc(userRef, {
+          reports: arrayUnion({ name: reportName, content: cleaned, createdAt: new Date().toISOString() }),
+        });
+        console.log("✅ Report automatically saved to Firebase!");
+      }
+    } catch (err) {
+      console.error(err);
+      setError("⚠️ Failed to fetch or save health report.");
     } finally {
       setLoading(false);
     }
   };
+
+  // --- Download report ---
+  const downloadReport = () => {
+    const blob = new Blob([report], { type: "text/plain;charset=utf-8" });
+    saveAs(blob, `Health_Report_${user?.name || "user"}.txt`);
+  };
+
+  useEffect(() => {
+    if (user) fetchReport();
+  }, [user]);
 
   if (!user) return <p className="report-placeholder">Please submit user data to see report.</p>;
   if (error) return <p className="report-error">{error}</p>;
@@ -73,15 +71,19 @@ const Report = ({ user }) => {
   return (
     <div className="report-container">
       <h2 className="report-title">Health Impact Report</h2>
-      {!paid ? (
-        <div className="payment-box">
-          <p className="payment-instruction">Pay ₹5 to unlock your personalized AI health report.</p>
-          <button onClick={loadRazorpay} className="pay-btn">Pay ₹5</button>
-        </div>
-      ) : loading ? (
+      {loading ? (
         <p className="report-status">Generating your report. Please wait...</p>
       ) : (
-        <div className="report-content">{report}</div>
+        <>
+          <div className="report-content">
+            <ReactMarkdown>{report}</ReactMarkdown>
+          </div>
+          <div className="report-actions">
+            <button onClick={downloadReport} disabled={loading} className="btn-download">
+              💾 Download Report
+            </button>
+          </div>
+        </>
       )}
     </div>
   );

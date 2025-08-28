@@ -1,0 +1,159 @@
+/* Header.css */
+
+/* Root header styling */
+.header {
+  position: sticky;
+  top: 1rem;
+  z-index: 1000;
+  background-color: #ffffff;
+  padding: 0.75rem 2rem;
+  border-radius: 16px;
+  max-width: 1200px; /* controls floating width */
+  width: calc(100% - 4rem); /* subtract horizontal padding for small screens */
+  margin: 0 auto;  /* centers it */
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  font-family: 'Inter', sans-serif;
+  transition: all 0.3s ease;
+}
+
+/* Container for flex alignment */
+.header-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+/* Logo */
+.logo {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1f1f1f;
+  letter-spacing: 1px;
+}
+
+/* Desktop Navigation */
+.nav-menu {
+  display: flex;
+  gap: 2rem;
+  align-items: center;
+}
+
+.nav-item {
+  position: relative;
+  cursor: pointer;
+  font-weight: 500;
+  color: #1f1f1f;
+  transition: color 0.3s, transform 0.2s;
+}
+
+.nav-item:hover {
+  color: #ff6600;
+  transform: translateY(-2px);
+}
+
+/* Search Bar */
+.search-bar {
+  display: flex;
+  align-items: center;
+  border: 1px solid #ddd;
+  padding: 0.3rem 0.7rem;
+  border-radius: 8px;
+  transition: box-shadow 0.3s ease, border 0.3s ease;
+}
+
+.search-bar input {
+  border: none;
+  outline: none;
+  width: 140px;
+  font-size: 0.95rem;
+  background: transparent;
+  color: #1f1f1f;
+}
+
+.search-bar:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border-color: #ff6600;
+}
+
+.search-icon {
+  margin-left: 0.4rem;
+  cursor: pointer;
+  color: #ff6600;
+  transition: transform 0.2s;
+}
+
+.search-icon:hover {
+  transform: scale(1.1);
+}
+
+/* CTA Button */
+.cta-btn {
+  background-color: #ff6600;
+  color: white;
+  padding: 0.55rem 1.25rem;
+  border-radius: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.3s, transform 0.2s, box-shadow 0.3s;
+}
+
+.cta-btn:hover {
+  background-color: #e55a00;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+}
+
+/* Mobile Menu Button */
+.mobile-btn {
+  display: none;
+  font-size: 1.3rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #1f1f1f;
+}
+
+/* Mobile Menu */
+.mobile-menu {
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+  background: #ffffff;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  border-radius: 12px;
+  position: absolute;
+  top: 100%;
+  right: 1.5rem;
+  width: 200px;
+  z-index: 999;
+}
+
+.mobile-item {
+  padding: 0.6rem 0;
+  font-weight: 500;
+  cursor: pointer;
+  transition: color 0.3s, transform 0.2s;
+}
+
+.mobile-item:hover {
+  color: #ff6600;
+  transform: translateX(4px);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .nav-menu,
+  .search-bar,
+  .cta-btn {
+    display: none;
+  }
+
+  .mobile-btn {
+    display: block;
+  }
+
+  .header {
+    padding: 0.6rem 1rem;
+  }
+}

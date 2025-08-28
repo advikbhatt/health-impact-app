@@ -17,9 +17,9 @@ const Footer = () => {
         <Link to="/terms" className="footer-link">
           Terms of Service
         </Link>
-        <Link to="/careers" className="footer-link">
+        {/* <Link to="/careers" className="footer-link">
           Careers
-        </Link>
+        </Link> */}
       </div>
 
       {/* Right Social Icons */}

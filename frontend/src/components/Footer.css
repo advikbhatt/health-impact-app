@@ -1,70 +1,88 @@
+/* ----------- Footer Styles ----------- */
 footer {
   width: 100%;
-  background-color: #000;
+  background-color: #111;
   color: #fff;
-  padding: 12px 24px;
+  padding: 24px 32px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   font-size: 14px;
-  flex-wrap: wrap; /* allow wrap on small screens */
+  flex-wrap: wrap;
+  box-sizing: border-box;
+  border-top: 3px solid #ffda29;
 }
 
-/* Left copyright text */
+/* Left Section - Copyright */
 .footer-left {
-  color: #9ca3af; /* gray-400 */
-  margin-bottom: 8px;
+  color: #9ca3af;
+  font-size: 14px;
 }
 
 .footer-left span {
-  color: #fff;
-  font-weight: 500;
+  color: #ffda29;
+  font-weight: 600;
 }
 
-/* Center links */
+/* Center Section - Links */
 .footer-links {
   display: flex;
   gap: 24px;
-  margin-bottom: 8px;
+  flex-wrap: wrap;
+  justify-content: center;
 }
 
 .footer-links a {
   color: #fff;
   text-decoration: none;
-  transition: 0.3s ease;
+  font-weight: 500;
+  transition: all 0.3s ease;
 }
 
 .footer-links a:hover {
+  color: #ffda29;
   text-decoration: underline;
 }
 
-/* Right social icons */
+/* Right Section - Social Icons */
 .footer-icons {
   display: flex;
-  gap: 16px;
+  gap: 20px;
+  align-items: center;
 }
 
 .footer-icons a {
   display: inline-flex;
-  transition: transform 0.2s ease-in-out;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  width: 36px;
+  height: 36px;
+  background-color: #222;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+  font-size: 18px;
 }
 
 .footer-icons a:hover {
-  transform: scale(1.1);
+  transform: scale(1.2);
+  background-color: #ffda29;
+  color: #000;
 }
 
-/* -------- Responsive -------- */
+/* Responsive - Tablets */
 @media (max-width: 768px) {
   footer {
     flex-direction: column;
     align-items: center;
     text-align: center;
-    gap: 10px;
+    gap: 16px;
+    padding: 24px 16px;
   }
 
   .footer-links {
     flex-direction: column;
-    gap: 8px;
+    gap: 12px;
   }
 
   .footer-icons {
@@ -72,18 +90,20 @@ footer {
   }
 }
 
+/* Responsive - Mobile */
 @media (max-width: 480px) {
   footer {
-    font-size: 12px;
-    padding: 16px;
+    font-size: 13px;
+    padding: 16px 10px;
   }
 
   .footer-links {
-    gap: 6px;
+    gap: 8px;
   }
 
-  .footer-icons a svg {
-    width: 18px;
-    height: 18px;
+  .footer-icons a {
+    width: 32px;
+    height: 32px;
+    font-size: 16px;
   }
 }

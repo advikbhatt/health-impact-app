@@ -46,7 +46,7 @@ const PollutionInfo = ({ user }) => {
     if (user) getLocation();
   }, [user]);
 
-  if (!user) return <p className="text-center mt-6 text-gray-400">User data not submitted yet.</p>;
+  if (!user) return <p className="text-center mt-6 text-gray-400"></p>;
   if (error) return <p className="text-red-500 text-center mt-5">{error}</p>;
   if (!pollution) return <p className="text-center text-gray-400 mt-6">Loading pollution info...</p>;
 
