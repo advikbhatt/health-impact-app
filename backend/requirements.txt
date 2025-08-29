@@ -1,8 +1,35 @@
+# Core Framework
 fastapi
-uvicorn
+uvicorn[standard]
+
+# Environment & Config
 python-dotenv
+
+# Firebase
 firebase-admin
+
+# HTTP Requests
 requests
-fitz
-razorpay
-setuptools 
+
+# PDF / Reports
+PyMuPDF   # (import as "fitz")
+
+# Utils
+setuptools
+
+# Data & Validation
+pydantic
+numpy
+pandas
+
+# ML / Health Impact Models
+scikit-learn
+torch
+torchvision
+tensorflow
+
+# Visualization
+matplotlib
+
+# CORS for frontend integration
+fastapi-cors
