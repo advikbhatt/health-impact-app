@@ -154,6 +154,12 @@
   }
 
   .header {
-    padding: 0.6rem 1rem;
+    padding: 0.2rem 1rem;
+  }
+  .header{
+    a{
+      font-size: 18px;
+    }
   }
 }
+

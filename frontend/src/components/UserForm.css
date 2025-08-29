@@ -226,7 +226,7 @@ button[type="submit"]:hover {
   .map-section {
     border-radius: 0%;
     width: 100% !important;
-    padding: 10px;
+    padding: 20px;
   }
 
   .user-form {

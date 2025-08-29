@@ -9,7 +9,7 @@ const mapContainerStyle = {
   borderRadius: "12px",
 };
 
-const defaultCenter = { lat: 20.5937, lng: 78.9629 }; // India
+const defaultCenter = { lat: 20.5937, lng: 78.9629 }; 
 
 const UserForm = ({ onUserSaved }) => {
   const [form, setForm] = useState({
@@ -18,6 +18,8 @@ const UserForm = ({ onUserSaved }) => {
     gender: "Male",
     disease: "None",
     city: "",
+    latitude: null,
+    longitude: null,
   });
 
   const [error, setError] = useState("");
@@ -25,10 +27,10 @@ const UserForm = ({ onUserSaved }) => {
   const [mapRef, setMapRef] = useState(null);
 
   const { isLoaded } = useJsApiLoader({
-    googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API, // ✅ must be set in .env
+    googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API, 
   });
 
-  // Try to get user’s current location
+  // Try to detect user's current location
   useEffect(() => {
     if ("geolocation" in navigator) {
       navigator.geolocation.getCurrentPosition(
@@ -38,11 +40,11 @@ const UserForm = ({ onUserSaved }) => {
             lng: position.coords.longitude,
           };
           setCoordinates(coords);
-          fetchCityFromCoordinates(coords);
+          setForm((prev) => ({ ...prev, latitude: coords.lat, longitude: coords.lng }));
         },
         (err) => {
           console.warn("No user location provided:", err.message);
-          setCoordinates(defaultCenter); // fallback to India
+          setCoordinates(defaultCenter);
         },
         { enableHighAccuracy: true }
       );
@@ -52,16 +54,7 @@ const UserForm = ({ onUserSaved }) => {
     }
   }, []);
 
-  const handleChange = (e) => {
-    const updatedForm = { ...form, [e.target.name]: e.target.value };
-    setForm(updatedForm);
-
-    if (e.target.name === "city" && e.target.value.length > 2) {
-      fetchCoordinates(updatedForm.city);
-    }
-  };
-
-  // Forward geocoding: City -> Coordinates
+  // ✅ Now fetchCoordinates is defined
   const fetchCoordinates = async (cityName) => {
     try {
       const res = await axios.get("https://nominatim.openstreetmap.org/search", {
@@ -72,6 +65,7 @@ const UserForm = ({ onUserSaved }) => {
         const { lat, lon } = res.data[0];
         const coords = { lat: parseFloat(lat), lng: parseFloat(lon) };
         setCoordinates(coords);
+        setForm((prev) => ({ ...prev, latitude: coords.lat, longitude: coords.lng }));
 
         if (mapRef) {
           mapRef.panTo(coords);
@@ -82,34 +76,12 @@ const UserForm = ({ onUserSaved }) => {
     }
   };
 
-  // Reverse geocoding: Coordinates -> City
-  const fetchCityFromCoordinates = async ({ lat, lng }) => {
-    try {
-      const response = await axios.get(
-        `https://maps.googleapis.com/maps/api/geocode/json`,
-        {
-          params: {
-            latlng: `${lat},${lng}`,
-            key: import.meta.env.VITE_GOOGLE_MAPS_API,
-          },
-        }
-      );
+  const handleChange = (e) => {
+    const updatedForm = { ...form, [e.target.name]: e.target.value };
+    setForm(updatedForm);
 
-      if (response.data.results.length > 0) {
-        const components = response.data.results[0].address_components;
-        const cityComp =
-          components.find((c) => c.types.includes("locality")) ||
-          components.find((c) =>
-            c.types.includes("administrative_area_level_2")
-          ) ||
-          components.find((c) =>
-            c.types.includes("administrative_area_level_1")
-          );
-        const city = cityComp ? cityComp.long_name : "Unknown";
-        setForm((prev) => ({ ...prev, city }));
-      }
-    } catch (err) {
-      console.error("Reverse geocoding failed:", err);
+    if (e.target.name === "city" && e.target.value.length > 2) {
+      fetchCoordinates(updatedForm.city);
     }
   };
 
@@ -118,13 +90,13 @@ const UserForm = ({ onUserSaved }) => {
     const lng = e.latLng.lng();
     const coords = { lat, lng };
     setCoordinates(coords);
-    fetchCityFromCoordinates(coords);
+    setForm((prev) => ({ ...prev, latitude: lat, longitude: lng }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     const { name, age, city } = form;
-    if (!name || !age ) {
+    if (!name || !age || !city) {
       setError("All fields are required.");
       return;
     }
@@ -176,9 +148,7 @@ const UserForm = ({ onUserSaved }) => {
               placeholder="Start typing your city"
               required
             />
-            <p className="instruction-text">
-              Typing a city will auto-locate it on the map below.
-            </p>
+       
 
             <label htmlFor="gender">Gender</label>
             <select name="gender" value={form.gender} onChange={handleChange}>

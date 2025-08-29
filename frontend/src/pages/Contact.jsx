@@ -22,16 +22,20 @@ const Contact = () => {
           {/* Contact Info Section */}
           <div className="contact-info">
             <div className="info-card">
-              <h3>📍 Address</h3>
-              <p>123 Business Street, Tech City, India</p>
+              <h3>🏢 Company</h3>
+              <p>RIG 360 Media & News Pvt. Ltd.</p>
             </div>
+            {/* <div className="info-card">
+              <h3>🆔 GST</h3>
+              <p>07AAICR2817H1ZC</p>
+            </div> */}
             <div className="info-card">
-              <h3>📞 Phone</h3>
-              <p>+91 98765 43210</p>
+              <h3>📍 Address</h3>
+              <p>Sector-A/Pocket-A, 1022, Vasant Kunj, New Delhi-110070</p>
             </div>
             <div className="info-card">
               <h3>📧 Email</h3>
-              <p>support@yourapp.com</p>
+              <p>Rig360media@gmail.com</p>
             </div>
           </div>
 
@@ -62,7 +66,7 @@ const Contact = () => {
         <div className="map-container">
           <iframe
             title="location-map"
-            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3153.093754470829!2d-122.41941558468122!3d37.77492977975914!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8085808f0f6b6a13%3A0x4e36d33eeb7d7f7!2sSan%20Francisco!5e0!3m2!1sen!2sin!4v1692441234567"
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3505.7573063571895!2d77.16024821093374!3d28.516948675626914!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x390d1e704d381053%3A0x5ff27038d784859a!2s1022%2C%20Pocket%20A%2C%20Sector-A%2C%20Vasant%20Kunj%2C%20New%20Delhi%2C%20Delhi%20110070!5e0!3m2!1sen!2sin!4v1756461518512!5m2!1sen!2sin"
             width="100%"
             height="300"
             style={{ border: "0" }}

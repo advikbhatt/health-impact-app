@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import UserForm from "./components/UserForm";
 import PollutionInfo from "./components/PollutionInfo";
 import WaterInfo from "./components/WaterInfo"; 
-// import SoilInfo from "./components/SoilInfo";    
+import PremiumReport from "./pages/PremiumSection";    
 import Report from "./pages/Report";
 import Footer from "./components/Footer"; 
 import Header from "./components/Header";  
@@ -22,6 +22,7 @@ const Home = () => {
         <PollutionInfo user={user} />
         <WaterInfo user={user} />
         {/* <SoilInfo user={user} /> */}
+        {/* <PremiumReport user={user}/> */}
       </main>
 
       {/* Footer */}
