@@ -18,10 +18,6 @@ const Header = () => {
 
         {/* Desktop Menu */}
         <nav className="nav-menu">
-          <Link to="/premium" className="nav-item">
-            <FaMoneyBill style={{ marginRight: "0.3rem" }} />
-            Premium
-          </Link>
           <Link to="/about" className="nav-item">
             <FaInfoCircle style={{ marginRight: "0.3rem" }} />
             About Us
