@@ -80,9 +80,7 @@ const UserForm = ({ onUserSaved }) => {
     const updatedForm = { ...form, [e.target.name]: e.target.value };
     setForm(updatedForm);
 
-    if (e.target.name === "city" && e.target.value.length > 2) {
-      fetchCoordinates(updatedForm.city);
-    }
+
   };
 
   const handleMapClick = (e) => {

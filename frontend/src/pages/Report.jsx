@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import ReactMarkdown from "react-markdown";
 import { getFirestore, doc, updateDoc, arrayUnion } from "firebase/firestore";
 import { initializeApp } from "firebase/app";
-import { saveAs } from "file-saver";
+import html2pdf from "html2pdf.js"; 
 import "./Report.css";
 
 // --- Initialize Firebase ---
@@ -23,6 +23,7 @@ const Report = ({ user }) => {
   const [report, setReport] = useState("# Health Report\n\nWaiting for data...");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const reportRef = useRef(null); // Reference to report div for PDF
 
   const cleanReport = (text) => {
     if (!text) return "";
@@ -43,7 +44,11 @@ const Report = ({ user }) => {
         const reportName = `report_${new Date().toISOString()}`;
         const userRef = doc(db, "users", user.id);
         await updateDoc(userRef, {
-          reports: arrayUnion({ name: reportName, content: cleaned, createdAt: new Date().toISOString() }),
+          reports: arrayUnion({ 
+            name: reportName, 
+            content: cleaned, 
+            createdAt: new Date().toISOString() 
+          }),
         });
         console.log("✅ Report automatically saved to Firebase!");
       }
@@ -55,10 +60,17 @@ const Report = ({ user }) => {
     }
   };
 
-  // --- Download report ---
-  const downloadReport = () => {
-    const blob = new Blob([report], { type: "text/plain;charset=utf-8" });
-    saveAs(blob, `Health_Report_${user?.name || "user"}.txt`);
+  // --- Download report as PDF ---
+  const downloadPDF = () => {
+    const element = reportRef.current;
+    const opt = {
+      margin:       0.5,
+      filename:     `Health_Report_${user?.name || "user"}.pdf`,
+      image:        { type: "jpeg", quality: 0.98 },
+      html2canvas:  { scale: 2 },
+      jsPDF:        { unit: "in", format: "a4", orientation: "portrait" }
+    };
+    html2pdf().set(opt).from(element).save();
   };
 
   useEffect(() => {
@@ -75,12 +87,12 @@ const Report = ({ user }) => {
         <p className="report-status">Generating your report. Please wait...</p>
       ) : (
         <>
-          <div className="report-content">
+          <div className="report-content" ref={reportRef}>
             <ReactMarkdown>{report}</ReactMarkdown>
           </div>
           <div className="report-actions">
-            <button onClick={downloadReport} disabled={loading} className="btn-download">
-              💾 Download Report
+            <button onClick={downloadPDF} disabled={loading} className="btn-download">
+              📄 Download PDF
             </button>
           </div>
         </>

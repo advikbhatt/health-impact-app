@@ -1,24 +1,15 @@
 // src/components/PollutionInfo.jsx
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import "./PollutionInfo.css"; 
+import "./PollutionInfo.css";
 
 // WHO safe limits for common pollutants
 const WHO_LIMITS = {
-  pm2_5: 15, // PM2.5: Particulate Matter ≤ 2.5 µm
-  pm10: 45,  // PM10: Particulate Matter ≤ 10 µm
-  co: 4000,  // CO: Carbon Monoxide
-  no2: 200,  // NO2: Nitrogen Dioxide
-  o3: 100    // O3: Ozone
-};
-
-// Full forms / explanation for user clarity
-const POLLUTANT_FULL_NAMES = {
-  pm2_5: "PM2.5 (Fine Particulate Matter ≤ 2.5 µm)",
-  pm10: "PM10 (Coarse Particulate Matter ≤ 10 µm)",
-  co: "CO (Carbon Monoxide)",
-  no2: "NO2 (Nitrogen Dioxide)",
-  o3: "O3 (Ozone)"
+  pm2_5: 15,
+  pm10: 45,
+  co: 4000,
+  no2: 200,
+  o3: 100,
 };
 
 const PollutionInfo = ({ user }) => {
@@ -33,27 +24,27 @@ const PollutionInfo = ({ user }) => {
 
       const comp = res.data.list[0].components;
 
-      const data = { 
-        city, lat, lon, 
-        pm2_5: comp.pm2_5, 
-        pm10: comp.pm10, 
-        co: comp.co, 
-        no2: comp.no2, 
-        o3: comp.o3 
+      const data = {
+        city,
+        lat,
+        lon,
+        pm2_5: comp.pm2_5,
+        pm10: comp.pm10,
+        co: comp.co,
+        no2: comp.no2,
+        o3: comp.o3,
       };
 
-      // Optional: save to backend for analytics
       await axios.post(`${import.meta.env.VITE_BACKEND_URL}/save_pollution`, data);
-
       setPollution(data);
     } catch {
-      setError("❌ Failed to fetch pollution data. Please check your internet connection or city name.");
+      setError("❌ Failed to fetch pollution data.");
     }
   };
 
   const getLocation = () => {
     if (!navigator.geolocation) {
-      setError("⚠️ Geolocation not supported by your browser. Please enter your city.");
+      setError("⚠️ Geolocation not supported by your browser.");
       return;
     }
 
@@ -62,7 +53,6 @@ const PollutionInfo = ({ user }) => {
         await fetchPollution(coords.latitude, coords.longitude, user.city);
       },
       async () => {
-        // fallback: use city name to fetch coordinates
         try {
           const geo = await axios.get(
             `https://api.openweathermap.org/geo/1.0/direct?q=${user.city}&limit=1&appid=${import.meta.env.VITE_OPENWEATHER_API_KEY}`
@@ -70,7 +60,7 @@ const PollutionInfo = ({ user }) => {
           const { lat, lon } = geo.data[0];
           await fetchPollution(lat, lon, user.city);
         } catch {
-          setError("⚠️ Could not determine location from city. Please enter a valid city.");
+          setError("⚠️ Could not determine location from city.");
         }
       }
     );
@@ -80,17 +70,12 @@ const PollutionInfo = ({ user }) => {
     if (user) getLocation();
   }, [user]);
 
-  if (!user) return <p className="text-center mt-6 text-gray-400"></p>;
+  if (!user) return null;
   if (error) return <p className="text-red-500 text-center mt-5">{error}</p>;
   if (!pollution) return <p className="text-center text-gray-400 mt-6">Loading pollution info...</p>;
 
   return (
     <div className="pollution-container">
-      <h2 className="pollution-title">🌍 Air Pollution in {pollution.city}</h2>
-      <p className="pollution-description">
-        This table shows current levels of common air pollutants in your area compared to the safe limits recommended by the World Health Organization (WHO).
-      </p>
-
       <table className="pollution-table">
         <thead>
           <tr>
@@ -102,9 +87,7 @@ const PollutionInfo = ({ user }) => {
         <tbody>
           {Object.keys(WHO_LIMITS).map((key) => (
             <tr key={key}>
-              <td className="pollutant-name" title={POLLUTANT_FULL_NAMES[key]}>
-                {key.toUpperCase()}
-              </td>
+              <td className="pollutant-name">{key.toUpperCase()}</td>
               <td className={pollution[key] > WHO_LIMITS[key] ? "value-bad" : "value-good"}>
                 {pollution[key]}
               </td>
@@ -113,10 +96,6 @@ const PollutionInfo = ({ user }) => {
           ))}
         </tbody>
       </table>
-
-      <p className="pollution-note">
-        ⚠️ Values above WHO limits are considered harmful to health. Take precautions like wearing masks or using air purifiers if necessary.
-      </p>
     </div>
   );
 };
