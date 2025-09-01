@@ -58,22 +58,6 @@ if not OPENWEATHER_API_KEY or not PERPLEXITY_API_KEY:
 # ---------------------------
 # Data Models
 # ---------------------------
-class UserProfile(BaseModel):
-    name: str
-    age: int
-    gender: str
-    city: str
-    disease: str
-
-class PollutionData(BaseModel):
-    city: str
-    lat: float
-    lon: float
-    pm2_5: float
-    pm10: float
-    co: float
-    no2: float
-    o3: float
 
 class ReportResponse(BaseModel):
     report: str
@@ -91,16 +75,30 @@ class PaidUserProfile(BaseModel):
     diet: str
     stress_level: str
 
-# ---------------------------
-# Free User Routes
-# ---------------------------
+class UserProfile(BaseModel):
+    name: str
+    age: int
+    gender: str
+    city: str
+    disease: str
+
+class PollutionData(BaseModel):
+    city: str
+    lat: float
+    lon: float
+    pm2_5: float
+    pm10: float
+    co: float
+    no2: float
+    o3: float
+
 @app.post("/save_user")
 def save_user(data: UserProfile):
     db.collection("users").add(data.dict())
     os.makedirs("temp_storage", exist_ok=True)
     with open("temp_storage/profile.json", "w") as f:
         json.dump(data.dict(), f)
-    return {"msg": "✅ User saved"}
+    return {"msg": "User saved"}
 
 @app.post("/save_pollution")
 def save_pollution(data: PollutionData):
@@ -108,60 +106,86 @@ def save_pollution(data: PollutionData):
     os.makedirs("temp_storage", exist_ok=True)
     with open("temp_storage/pollution.json", "w") as f:
         json.dump(data.dict(), f)
-    return {"msg": "✅ Pollution data saved"}
+    return {"msg": "Pollution saved"}
+
+class ReportResponse(BaseModel):
+    report: str
 
 @app.get("/generate_report", response_model=ReportResponse)
 def generate_report():
+
     try:
         with open("temp_storage/profile.json") as f1, open("temp_storage/pollution.json") as f2:
             profile = json.load(f1)
             pollution = json.load(f2)
     except FileNotFoundError:
-        return {"error": "❌ Missing profile or pollution data"}
+        return {"error": "Missing profile or pollution data"}
+
 
     prompt = f"""
-    Generate a health impact report in a structured prescription letter format.
+    Generate a health impact report in a structured prescription letter format. Follow this exact layout:
 
-    1. **Header**
+    1. **Header (top)**
        - Location: {pollution['city']}
        - Name: {profile['name']}
        - Age: {profile['age']}
        - Gender: {profile['gender']}
        - Health Condition: {profile['disease'] if profile['disease'] != 'none' else 'None'}
 
-    2. **Summary of Local Air Conditions**
-       - PM2.5: {pollution['pm2_5']}, PM10: {pollution['pm10']}, CO: {pollution['co']}, NO₂: {pollution['no2']}, O₃: {pollution['o3']}.
-       - Mention safety levels and typical impact.
+    2. **Summary of Local Air Conditions (3 lines)**
+       - Summarize the pollution in the area using PM2.5: {pollution['pm2_5']}, PM10: {pollution['pm10']}, CO: {pollution['co']}, NO₂: {pollution['no2']}, O₃: {pollution['o3']}.
+       - Mention if levels are safe, moderate, or unsafe.
+       - Comment briefly on the air quality's typical effect in this region.
 
-    3. **Short-Term Effects** (3 bullet points)
+    3. **Short-Term Effects (3 points)**
+       - Bullet points describing likely immediate health effects for a person with this profile in this area.
 
-    4. **Long-Term Effects** (3 bullet points)
+    4. **Long-Term Effects (3 points)**
+       - Bullet points on possible chronic health issues over time.
 
     5. **Safety Timeline**
-       - 3 Years: ...
-       - 5 Years: ...
-       - 7 Years: ...
-       - 10+ Years: ...
+       - 3 Years: [risk level and expected symptoms]
+       - 5 Years: [risk level and expected symptoms]
+       - 7 Years: [risk level and expected symptoms]
+       - 10+ Years: [risk level and expected symptoms]
 
-    6. **Precautionary Measures** (3 actionable tips)
+    6. **Precautionary Measures (3 points)**
+       - Bullet points with actionable health and environmental safety tips.
+
+    Always keep the language clear, medically sound but simple, and maintain the formatting exactly as above.
     """
+    
 
-    headers = {"Authorization": f"Bearer {PERPLEXITY_API_KEY}", "Content-Type": "application/json"}
-    payload = {"model": "sonar-reasoning", "messages": [{"role": "user", "content": prompt}]}
+    headers = {
+        "Authorization": f"Bearer {PERPLEXITY_API_KEY}",
+        "Content-Type": "application/json"
+    }
+
+    payload = {
+        "model": "sonar-reasoning",
+        "messages": [{"role": "user", "content": prompt}]
+    }
 
     try:
-        response = requests.post("https://api.perplexity.ai/chat/completions", headers=headers, json=payload)
+        response = requests.post(
+            "https://api.perplexity.ai/chat/completions",
+            headers=headers,
+            json=payload
+        )
         response.raise_for_status()
         data = response.json()
 
         report_text = data.get("choices", [{}])[0].get("message", {}).get("content", "")
         if not report_text:
-            return {"error": "❌ AI did not return any content."}
+            return {"error": "AI did not return any content."}
 
         return {"report": report_text}
 
     except requests.exceptions.RequestException as e:
-        return {"error": f"❌ Request to AI failed: {e}"}
+        return {"error": f"Request to AI failed: {e}"}
+
+
+
 
 # ---------------------------
 # Paid User Routes
