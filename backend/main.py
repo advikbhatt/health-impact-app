@@ -174,14 +174,6 @@ def generate_report():
     except requests.exceptions.RequestException as e:
         return {"error": f"Request to AI failed: {e}"}
 
-from fastapi import FastAPI
-from pydantic import BaseModel
-import os, json
-from firebase_admin import firestore
-
-# app = FastAPI()
-db = firestore.client()
-
 # --- Paid User Profile Schema ---
 class PaidUserProfile(BaseModel):
     name: str
