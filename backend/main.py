@@ -174,31 +174,119 @@ def generate_report():
     except requests.exceptions.RequestException as e:
         return {"error": f"Request to AI failed: {e}"}
 
+from fastapi import FastAPI
+from pydantic import BaseModel
+import os, json
+from firebase_admin import firestore
 
-        
-class WaterParameter(BaseModel):
-    parameter: str
-    value: float
-    status: str
+app = FastAPI()
+db = firestore.client()
 
-@app.get("/get_water/{city}", response_model=List[WaterParameter])
-async def get_water(city: str):
-    return [
-        {"parameter": "pH", "value": 7.2, "status": "Safe"},
-        {"parameter": "Turbidity", "value": 1.5, "status": "Safe"},
-        {"parameter": "Lead", "value": 0.05, "status": "Unsafe"}
-    ]
+# --- Paid User Profile Schema ---
+class PaidUserProfile(BaseModel):
+    name: str
+    age: int
+    gender: str
+    city: str
+    disease: str
+    lifestyle: str
+    medical_history: str
+    smoking: str      
+    exercise: str
+    diet: str
+    stress_level: str
 
-class SoilParameter(BaseModel):
-    parameter: str
-    value: float
-    status: str
+@app.post("/save_paid_user")
+def save_paid_user(data: PaidUserProfile):
+    db.collection("paid_users").add(data.dict())
+    os.makedirs("temp_storage", exist_ok=True)
+    with open("temp_storage/paid_profile.json", "w") as f:
+        json.dump(data.dict(), f)
+    return {"msg": "✅ Paid user data saved successfully"}
 
-@app.get("/get_soil/{city}", response_model=List[SoilParameter])
-async def get_soil(city: str):
-    return [
-        {"parameter": "Nitrogen", "value": 4, "status": "Safe"},
-        {"parameter": "Phosphorus", "value": 22, "status": "Safe"},
-        {"parameter": "Lead", "value": 0.1, "status": "Unsafe"}
-    ]
+
+@app.get("/generate_paid_report", response_model=ReportResponse)
+def generate_paid_report():
+    try:
+        with open("temp_storage/paid_profile.json") as f1, open("temp_storage/pollution.json") as f2:
+            profile = json.load(f1)
+            pollution = json.load(f2)
+    except FileNotFoundError:
+        return {"error": "Missing paid profile or pollution data"}
+
+    # Richer prompt for paid users
+    prompt = f"""
+    Generate a **premium health report** in a structured medical prescription format with clear headings.
+
+    1. **Patient Details**
+       - Name: {profile['name']}
+       - Age: {profile['age']}
+       - Gender: {profile['gender']}
+       - City: {profile['city']}
+       - Existing Condition: {profile['disease'] if profile['disease'] != 'none' else 'None'}
+
+    2. **Lifestyle & Medical Background**
+       - Lifestyle: {profile['lifestyle']}
+       - Medical History: {profile['medical_history']}
+       - Smoking: {"Yes" if profile['smoking'] else "No"}
+       - Exercise: {profile['exercise']}
+       - Diet: {profile['diet']}
+       - Stress Level: {profile['stress_level']}
+
+    3. **Air Pollution Analysis**
+       - PM2.5: {pollution['pm2_5']}
+       - PM10: {pollution['pm10']}
+       - CO: {pollution['co']}
+       - NO₂: {pollution['no2']}
+       - O₃: {pollution['o3']}
+       - Explain whether levels are safe, moderate, or unsafe.
+
+    4. **Personalized Health Risks**
+       - Short-term effects (tailored to this patient).
+       - Long-term effects (chronic risks considering lifestyle & history).
+
+    5. **Graphical Insights**
+       - Suggest how graphs can show pollution impact on health (e.g., lung function decline over years).
+
+    6. **Prescription & Recommendations**
+       - Medication-style advice (if applicable).
+       - Lifestyle changes (customized).
+       - Preventive measures.
+
+    7. **Prognosis Timeline**
+       - 3 Years: ...
+       - 5 Years: ...
+       - 7 Years: ...
+       - 10+ Years: ...
+    """
+
+    headers = {
+        "Authorization": f"Bearer {PERPLEXITY_API_KEY}",
+        "Content-Type": "application/json"
+    }
+
+    payload = {
+        "model": "sonar-reasoning",
+        "messages": [{"role": "user", "content": prompt}]
+    }
+
+    try:
+        response = requests.post(
+            "https://api.perplexity.ai/chat/completions",
+            headers=headers,
+            json=payload
+        )
+        response.raise_for_status()
+        data = response.json()
+
+        report_text = data.get("choices", [{}])[0].get("message", {}).get("content", "")
+        if not report_text:
+            return {"error": "AI did not return any content."}
+
+        return {"report": report_text}
+
+    except requests.exceptions.RequestException as e:
+        return {"error": f"Request to AI failed: {e}"}
+
+
 
