@@ -2,30 +2,30 @@ import React, { useState } from "react";
 import UserForm from "./components/UserForm";
 import PollutionInfo from "./components/PollutionInfo";
 import WaterInfo from "./components/WaterInfo"; 
-import PremiumReport from "./pages/PremiumSection";    
 import Report from "./pages/Report";
+import PaidUserForm from "./components/PaidUserForm";
+import PaidReport from "./pages/PaidReport";
 import Footer from "./components/Footer"; 
 import Header from "./components/Header";  
 
 const Home = () => {
   const [user, setUser] = useState(null);
+  const [paidUser, setPaidUser] = useState(null);
 
   return (
     <div className="app-container">
-      {/* Header */}
       <Header />
-
-      {/* Main content */}
       <main className="main-content">
+        {/* Free Section */}
         <UserForm onUserSaved={setUser} />
         <Report user={user} />
         <PollutionInfo user={user} />
         <WaterInfo user={user} />
-        {/* <SoilInfo user={user} /> */}
-        {/* <PremiumReport user={user}/> */}
-      </main>
 
-      {/* Footer */}
+        {/* Premium Section */}
+        <PaidUserForm onPaidUserSaved={setPaidUser} />
+        <PaidReport paidUser={paidUser} />
+      </main>
       <Footer />
     </div>
   );
