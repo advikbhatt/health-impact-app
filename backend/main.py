@@ -1,35 +1,33 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request, Query
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel
-import os, json
+from typing import Optional, List
+import os, json, requests, datetime, hmac, hashlib
 from dotenv import load_dotenv
-import requests
+
 import firebase_admin
 from firebase_admin import credentials, firestore
-from fastapi.middleware.cors import CORSMiddleware
-from typing import List
-from fastapi import APIRouter
-import razorpay
-from fastapi import Request
-import hmac, hashlib
-from fastapi.responses import JSONResponse
-import datetime
-from typing import Optional
-from pydantic import BaseModel
-from fastapi import Query
 
-
+# ---------------------------
 # Initialize FastAPI app
+# ---------------------------
 app = FastAPI()
+
+# Allow CORS for frontend (localhost + deployed frontend later)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  
+    allow_origins=["http://localhost:5173", "*"],  # allow local + any
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
-# Load environment variables
+
+# ---------------------------
+# Firebase setup
+# ---------------------------
 load_dotenv()
+
 cred = credentials.Certificate({
     "type": os.getenv("FIREBASE_TYPE"),
     "project_id": os.getenv("FIREBASE_PROJECT_ID"),
@@ -42,28 +40,40 @@ cred = credentials.Certificate({
     "auth_provider_x509_cert_url": os.getenv("FIREBASE_AUTH_PROVIDER_X509_CERT_URL"),
     "client_x509_cert_url": os.getenv("FIREBASE_CLIENT_X509_CERT_URL")
 })
-firebase_admin.initialize_app(cred)
-# Initialize Firebase only once
-# if not firebase_admin._apps:
-#     cred = credentials.Certificate("firebase_config.json")
-#     firebase_admin.initialize_app(cred)
+
+if not firebase_admin._apps:  # Prevent reinitialization on reload
+    firebase_admin.initialize_app(cred)
 
 db = firestore.client()
 
-# Load API keys
+# ---------------------------
+# API Keys
+# ---------------------------
 OPENWEATHER_API_KEY = os.getenv("OPENWEATHER_API_KEY")
 PERPLEXITY_API_KEY = os.getenv("PERPLEXITY_API_KEY")
 
 if not OPENWEATHER_API_KEY or not PERPLEXITY_API_KEY:
-    raise EnvironmentError("Missing OPENWEATHER_API_KEY or PERPLEXITY_API_KEY in environment variables.")
+    raise EnvironmentError("❌ Missing OPENWEATHER_API_KEY or PERPLEXITY_API_KEY in environment variables.")
 
+# ---------------------------
+# Data Models
+# ---------------------------
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],  
-    allow_methods=["*"],
-    allow_headers=["*"]
-)
+class ReportResponse(BaseModel):
+    report: str
+
+class PaidUserProfile(BaseModel):
+    name: str
+    age: int
+    gender: str
+    city: str
+    disease: str
+    lifestyle: str
+    medical_history: str
+    smoking: str
+    exercise: str
+    diet: str
+    stress_level: str
 
 class UserProfile(BaseModel):
     name: str
@@ -174,28 +184,19 @@ def generate_report():
     except requests.exceptions.RequestException as e:
         return {"error": f"Request to AI failed: {e}"}
 
-# --- Paid User Profile Schema ---
-class PaidUserProfile(BaseModel):
-    name: str
-    age: int
-    gender: str
-    city: str
-    disease: str
-    lifestyle: str
-    medical_history: str
-    smoking: str      
-    exercise: str
-    diet: str
-    stress_level: str
 
+
+
+# ---------------------------
+# Paid User Routes
+# ---------------------------
 @app.post("/save_paid_user")
 def save_paid_user(data: PaidUserProfile):
     db.collection("paid_users").add(data.dict())
     os.makedirs("temp_storage", exist_ok=True)
     with open("temp_storage/paid_profile.json", "w") as f:
         json.dump(data.dict(), f)
-    return {"msg": "✅ Paid user data saved successfully"}
-
+    return {"msg": "✅ Paid user data saved"}
 
 @app.get("/generate_paid_report", response_model=ReportResponse)
 def generate_paid_report():
@@ -204,11 +205,10 @@ def generate_paid_report():
             profile = json.load(f1)
             pollution = json.load(f2)
     except FileNotFoundError:
-        return {"error": "Missing paid profile or pollution data"}
+        return {"error": "❌ Missing paid profile or pollution data"}
 
-    # Richer prompt for paid users
     prompt = f"""
-    Generate a **premium health report** in a structured medical prescription format with clear headings.
+    Generate a **premium health report** in a structured medical prescription format.
 
     1. **Patient Details**
        - Name: {profile['name']}
@@ -220,7 +220,7 @@ def generate_paid_report():
     2. **Lifestyle & Medical Background**
        - Lifestyle: {profile['lifestyle']}
        - Medical History: {profile['medical_history']}
-       - Smoking: {"Yes" if profile['smoking'] else "No"}
+       - Smoking: {profile['smoking']}
        - Exercise: {profile['exercise']}
        - Diet: {profile['diet']}
        - Stress Level: {profile['stress_level']}
@@ -231,19 +231,19 @@ def generate_paid_report():
        - CO: {pollution['co']}
        - NO₂: {pollution['no2']}
        - O₃: {pollution['o3']}
-       - Explain whether levels are safe, moderate, or unsafe.
+       - Assess safety levels.
 
     4. **Personalized Health Risks**
-       - Short-term effects (tailored to this patient).
-       - Long-term effects (chronic risks considering lifestyle & history).
+       - Short-term effects tailored to lifestyle.
+       - Long-term risks considering history.
 
     5. **Graphical Insights**
-       - Suggest how graphs can show pollution impact on health (e.g., lung function decline over years).
+       - Suggest possible charts/visuals.
 
     6. **Prescription & Recommendations**
-       - Medication-style advice (if applicable).
-       - Lifestyle changes (customized).
-       - Preventive measures.
+       - Medical-style advice
+       - Lifestyle changes
+       - Preventive steps
 
     7. **Prognosis Timeline**
        - 3 Years: ...
@@ -252,33 +252,19 @@ def generate_paid_report():
        - 10+ Years: ...
     """
 
-    headers = {
-        "Authorization": f"Bearer {PERPLEXITY_API_KEY}",
-        "Content-Type": "application/json"
-    }
-
-    payload = {
-        "model": "sonar-reasoning",
-        "messages": [{"role": "user", "content": prompt}]
-    }
+    headers = {"Authorization": f"Bearer {PERPLEXITY_API_KEY}", "Content-Type": "application/json"}
+    payload = {"model": "sonar-reasoning", "messages": [{"role": "user", "content": prompt}]}
 
     try:
-        response = requests.post(
-            "https://api.perplexity.ai/chat/completions",
-            headers=headers,
-            json=payload
-        )
+        response = requests.post("https://api.perplexity.ai/chat/completions", headers=headers, json=payload)
         response.raise_for_status()
         data = response.json()
 
         report_text = data.get("choices", [{}])[0].get("message", {}).get("content", "")
         if not report_text:
-            return {"error": "AI did not return any content."}
+            return {"error": "❌ AI did not return any content."}
 
         return {"report": report_text}
 
     except requests.exceptions.RequestException as e:
-        return {"error": f"Request to AI failed: {e}"}
-
-
-
+        return {"error": f"❌ Request to AI failed: {e}"}
