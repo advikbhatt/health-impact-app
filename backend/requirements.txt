@@ -6,3 +6,4 @@ requests
 fitz
 razorpay
 setuptools 
+openai
