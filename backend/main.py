@@ -179,7 +179,7 @@ from pydantic import BaseModel
 import os, json
 from firebase_admin import firestore
 
-app = FastAPI()
+# app = FastAPI()
 db = firestore.client()
 
 # --- Paid User Profile Schema ---
