@@ -4,9 +4,9 @@ import "./Terms.css";
 const Terms = () => {
     return (
         <div className="terms-container">
-            <h1 className="terms-title">Terms of Service</h1>
+            <h1 className="terms-title">Terms & Conditions</h1>
             <div className="terms-doc">
-                <p><strong>Last Updated:</strong> [Insert Date]</p>
+                <p><strong>Last Updated:</strong> 04 September 2025</p>
                 <p>
                     Welcome to <strong>RIG360 Media</strong> (“Company,” “we,” “our,” or “us”). 
                     These Terms and Conditions (“Terms”) govern your use of our website 
@@ -16,61 +16,82 @@ const Terms = () => {
                     agree to be bound by these Terms. If you do not agree, please discontinue use immediately.
                 </p>
 
-                <h2>1. Use of Our Services</h2>
+                <h2>1. Eligibility & Use of Services</h2>
                 <ul>
                     <li>You must be at least 18 years old to use our Services.</li>
-                    <li>You agree to use our Site and Services only for lawful purposes and in compliance with all applicable laws and regulations.</li>
-                    <li>You agree not to misuse, copy, distribute, or modify the Site content without prior written consent from RIG360 Media.</li>
+                    <li>You agree to provide accurate information (Name, Address, Email ID, Mobile Number) when using our booking or payment services.</li>
+                    <li>You agree to use our Site and Services only for lawful purposes in compliance with applicable laws.</li>
                 </ul>
 
-                <h2>2. Intellectual Property Rights</h2>
+                <h2>2. Secure Website & Payments</h2>
                 <ul>
-                    <li>All content on this Site, including but not limited to images, videos, designs, logos, trademarks, and written material, is the intellectual property of RIG360 Media or our licensors.</li>
-                    <li>You are granted a limited, non-transferable, and non-exclusive license to access and use the Site for personal and business purposes directly related to the Services we provide.</li>
-                    <li>Any unauthorized reproduction, redistribution, or commercial exploitation of our content is strictly prohibited.</li>
+                    <li>Our website uses <strong>HTTPS (SSL encryption)</strong> to ensure secure transactions.</li>
+                    <li>All payments are processed through authorized and secure payment gateways in compliance with RBI guidelines.</li>
+                    <li>We do not store sensitive financial information like card details on our servers.</li>
                 </ul>
 
-                <h2>3. Client Engagement & Deliverables</h2>
+                <h2>3. Intellectual Property Rights</h2>
                 <ul>
-                    <li>All services, deliverables, timelines, and fees are defined in individual contracts, proposals, or project agreements with each client.</li>
-                    <li>Creative work produced by RIG360 Media remains our property until full payment has been received, at which point ownership may be transferred as per the project agreement.</li>
-                    <li>We reserve the right to showcase completed projects in our portfolio, case studies, or marketing materials unless otherwise agreed in writing.</li>
+                    <li>All site content, including videos, graphics, text, and designs, is the property of RIG360 Media or its licensors.</li>
+                    <li>You are granted a limited, non-transferable license to access and use the Site for personal/business purposes.</li>
+                    <li>Unauthorized use, reproduction, or distribution is strictly prohibited.</li>
                 </ul>
 
-                <h2>4. Payments & Refunds</h2>
+                <h2>4. Client Engagement & Deliverables</h2>
                 <ul>
-                    <li>Payment terms will be outlined in individual contracts or invoices.</li>
-                    <li>All agreed fees must be paid within the specified timeline.</li>
-                    <li>Refunds, if applicable, will be handled on a case-by-case basis as per the terms in the client’s project agreement.</li>
+                    <li>All deliverables, pricing, and timelines will be mutually agreed upon in project proposals or contracts.</li>
+                    <li>Ownership of creative work transfers to the client only after full payment is received.</li>
+                    <li>We may display completed projects in our portfolio unless otherwise agreed.</li>
                 </ul>
 
-                <h2>5. Third-Party Services</h2>
+                <h2>5. Payments & Refund Policy</h2>
                 <ul>
-                    <li>Our Services may involve third-party platforms, software, or technologies (e.g., AR/VR platforms, payment providers, etc.).</li>
-                    <li>We are not responsible for the performance, content, or policies of these third parties.</li>
+                    <li>Payments must be made as per the invoice terms shared with the client.</li>
+                    <li>We currently offer two pricing options for ChildSafe Environs reports: ₹35 (basic report) and ₹85 (detailed personalized report).</li>
+                    <li>Refunds & cancellations are subject to our <strong>Refund & Cancellation Policy</strong>, available on the Site.</li>
                 </ul>
 
-                <h2>6. Limitation of Liability</h2>
-                <ul>
-                    <li>While we strive to deliver high-quality creative services, we do not warrant that the Site or Services will be error-free, uninterrupted, or always available.</li>
-                    <li>RIG360 Media will not be liable for any direct, indirect, incidental, or consequential damages arising from the use of our Site or Services.</li>
-                </ul>
-
-                <h2>7. Privacy</h2>
-                <p>Your use of our Site is also governed by our Privacy Policy, which explains how we collect, use, and protect your data.</p>
-
-                <h2>8. Termination</h2>
-                <p>We reserve the right to suspend, restrict, or terminate your access to the Site and Services if you violate these Terms.</p>
-
-                <h2>9. Changes to Terms</h2>
-                <p>RIG360 Media may update these Terms from time to time. Changes will be effective upon posting on the Site with a new “Last Updated” date.</p>
-
-                <h2>10. Governing Law</h2>
-                <p>These Terms shall be governed by and construed under the laws of India, and any disputes shall be subject to the exclusive jurisdiction of the courts of New Delhi.</p>
-
-                <h2>11. Contact Us</h2>
+                <h2>6. Privacy Policy</h2>
                 <p>
-                    If you have any questions about these Terms, please contact us at:<br/>
+                    Your use of our Site is also governed by our <strong>Privacy Policy</strong>, 
+                    which explains how we collect, use, and protect your personal data (including 
+                    Name, Address, Email ID, and Mobile Number).
+                </p>
+
+                <h2>7. Third-Party Services</h2>
+                <ul>
+                    <li>We may integrate third-party services such as payment providers, hosting, or analytics.</li>
+                    <li>We are not liable for the functioning or policies of third-party platforms.</li>
+                </ul>
+
+                <h2>8. Limitation of Liability</h2>
+                <p>
+                    While we strive to maintain reliable and professional services, RIG360 Media 
+                    is not responsible for any direct, indirect, or incidental damages arising 
+                    from the use of our Site or Services.
+                </p>
+
+                <h2>9. Termination</h2>
+                <p>
+                    We may suspend or terminate access if you violate these Terms or misuse 
+                    our Services in any manner.
+                </p>
+
+                <h2>10. Changes to Terms</h2>
+                <p>
+                    RIG360 Media reserves the right to update these Terms periodically. 
+                    Any changes will be posted on this page with a new “Last Updated” date.
+                </p>
+
+                <h2>11. Governing Law</h2>
+                <p>
+                    These Terms shall be governed by the laws of India, with exclusive jurisdiction 
+                    of the courts of New Delhi.
+                </p>
+
+                <h2>12. Contact Us</h2>
+                <p>
+                    For any queries regarding these Terms, please contact:<br/>
                     <strong>RIG360 Media</strong><br/>
                     Email: <a href="mailto:rig360media@gmail.com">rig360media@gmail.com</a><br/>
                     Phone: +91 98110 45016<br/>

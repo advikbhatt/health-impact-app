@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { FaBars, FaTimes, FaInfoCircle, FaDollarSign, FaEnvelope, FaMoneyBill } from "react-icons/fa";
+import { FaBars, FaTimes, FaInfoCircle, FaDollarSign, FaEnvelope } from "react-icons/fa";
 import "./Header.css";
 
 const Header = () => {
@@ -11,8 +11,12 @@ const Header = () => {
       <div className="header-container">
         {/* Logo */}
         <div className="logo">
-          <Link to="/" style={{ color: "inherit", textDecoration: "none" }}>
-            ChildSafeEnvirons
+          <Link to="/" style={{ textDecoration: "none" }}>
+            <img
+              src="/assets/logo.jpg"
+              alt="ChildSafeEnvirons Logo"
+              className="logo-img"
+            />
           </Link>
         </div>
 

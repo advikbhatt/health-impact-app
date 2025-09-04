@@ -25,10 +25,6 @@ const Contact = () => {
               <h3>🏢 Company</h3>
               <p>RIG 360 Media & News Pvt. Ltd.</p>
             </div>
-            {/* <div className="info-card">
-              <h3>🆔 GST</h3>
-              <p>07AAICR2817H1ZC</p>
-            </div> */}
             <div className="info-card">
               <h3>📍 Address</h3>
               <p>Sector-A/Pocket-A, 1022, Vasant Kunj, New Delhi-110070</p>
@@ -36,6 +32,10 @@ const Contact = () => {
             <div className="info-card">
               <h3>📧 Email</h3>
               <p>Rig360media@gmail.com</p>
+            </div>
+            <div className="info-card">
+              <h3>📞 Phone</h3>
+              <p>+91 98110 45016</p>
             </div>
           </div>
 

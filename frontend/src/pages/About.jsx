@@ -1,6 +1,16 @@
 import React from "react";
-import { Link } from "react-router-dom";
-import { FaWind, FaTint, FaLeaf, FaVolumeUp, FaHeartbeat, FaChartLine } from "react-icons/fa";
+import { 
+  FaVideo, 
+  FaFilm, 
+  FaEdit, 
+  FaMicrophone, 
+  FaProjectDiagram, 
+  FaRegLightbulb, 
+  FaBookOpen, 
+  FaUsers, 
+  FaChartBar, 
+  FaGlobe 
+} from "react-icons/fa";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import "./About.css";
@@ -15,16 +25,20 @@ const About = () => {
         {/* Hero Section */}
         <section className="hero-section">
           <div className="hero-content">
-            <h1>ChildSafeEnvirons</h1>
+            <h1>About Us</h1>
             <p>
-              Monitor air and water pollution in real-time. 
-              Receive health impact forecasts tailored to your profile.
+              We are an editorial-based video production company proudly collaborating 
+              with <strong>ChildSafe Environs</strong>. Our expertise lies in producing 
+              impactful visual stories that raise awareness on child safety, health, and 
+              environmental protection. From concept to final cut, we deliver high-quality 
+              content that educates, informs, and inspires communities.
             </p>
             <h2>Our Mission</h2>
             <p>
-              We are dedicated to creating safer environments for families and communities. 
-              By providing accurate pollution data, risk forecasts, and actionable guidance, 
-              we empower you to take preventive measures.
+              To support ChildSafe Environs in building safer and healthier environments 
+              for children and families through the power of video. We combine creativity, 
+              storytelling, and technology to amplify messages of awareness, prevention, 
+              and community action.
             </p>
           </div>
         </section>
@@ -33,40 +47,61 @@ const About = () => {
         <section className="services-section">
           <h2 className="section-title">Our Services</h2>
           <div className="services-grid">
+            {/* Video Production Services */}
             <div className="card">
-              <FaWind className="card-icon" />
-              <h3>Air Pollution Monitoring</h3>
-              <p>Track air quality and pollutant levels in real-time.</p>
-            </div>
-            <div className="card">
-              <FaTint className="card-icon" />
-              <h3>Water Quality Analysis</h3>
-              <p>Monitor water sources and detect contamination early.</p>
+              <FaVideo className="card-icon" />
+              <h3>Awareness & Promotional Videos</h3>
+              <p>Engaging videos that spread awareness about child safety and environmental health.</p>
             </div>
             {/* <div className="card">
-              <FaLeaf className="card-icon" />
-              <h3>Land Pollution Tracking</h3>
-              <p>Assess soil health and environmental hazards on land.</p>
-            </div> */}
-            {/* <div className="card">
-              <FaVolumeUp className="card-icon" />
-              <h3>Noise & Sound Monitoring</h3>
-              <p>Analyze sound pollution to prevent health risks.</p>
+              <FaFilm className="card-icon" />
+              <h3>Documentaries</h3>
+              <p>Impact-driven films highlighting pollution, health, and safer communities.</p>
             </div> */}
             <div className="card">
-              <FaHeartbeat className="card-icon" />
-              <h3>Personalized Health Forecasts</h3>
-              <p>Get insights based on your exposure, age, and lifestyle.</p>
+              <FaEdit className="card-icon" />
+              <h3>Educational Content</h3>
+              <p>Video lessons and resources tailored for schools, NGOs, and families.</p>
             </div>
             <div className="card">
-              <FaChartLine className="card-icon" />
-              <h3>Interactive Reports</h3>
-              <p>Visualizations and easy-to-read summaries for informed decisions.</p>
+              <FaMicrophone className="card-icon" />
+              <h3>Voiceover & Sound Design</h3>
+              <p>Professional narration and soundscapes that enhance impactful storytelling.</p>
+            </div>
+            <div className="card">
+              <FaProjectDiagram className="card-icon" />
+              <h3>Event Coverage</h3>
+              <p>Documenting seminars, awareness drives, and community programs with multi-camera setups.</p>
+            </div>
+            {/* <div className="card">
+              <FaRegLightbulb className="card-icon" />
+              <h3>Creative Concept Development</h3>
+              <p>End-to-end content development – from scriptwriting to final delivery – focused on safety and awareness.</p>
+            </div> */}
+
+            {/* Website Features */}
+            <div className="card">
+              <FaBookOpen className="card-icon" />
+              <h3>Knowledge Hub</h3>
+              <p>Access articles, guides, and resources on child safety and environmental health.</p>
+            </div>
+            <div className="card">
+              <FaUsers className="card-icon" />
+              <h3>Community Support</h3>
+              <p>Join parents, educators, and experts to share ideas and best practices.</p>
+            </div>
+            <div className="card">
+              <FaChartBar className="card-icon" />
+              <h3>Reports & Insights</h3>
+              <p>Stay updated with the latest reports, data, and visual insights on safety.</p>
+            </div>
+            <div className="card">
+              <FaGlobe className="card-icon" />
+              <h3>Global Awareness Campaigns</h3>
+              <p>Be part of worldwide initiatives promoting safe and healthy environments.</p>
             </div>
           </div>
         </section>
-
-
       </div>
 
       {/* Footer */}
