@@ -33,20 +33,7 @@ const Pricing = () => {
 
         {/* Pricing Plans */}
         <div className="pricing-grid">
-          {/* Basic Plan */}
-          <div className="pricing-card">
-            <h2 className="plan-name">Basic Report</h2>
-            <p className="plan-price">₹35</p>
-            <p className="plan-description">
-              A small report designed for quick insights. 
-              Ideal for individuals who want a simple overview.
-            </p>
-            <ul className="plan-features">
-              <li>✔ General safety & awareness tips</li>
-              <li>✔ Short summary report (1–2 pages)</li>
-              <li>✔ Delivered instantly</li>
-            </ul>
-          </div>
+          
 
           {/* Premium Plan */}
           <div className="pricing-card premium">

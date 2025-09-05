@@ -1,9 +1,8 @@
-from fastapi import FastAPI, Request, Query
+from fastapi import FastAPI, Query
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
-from typing import Optional, List
-import os, json, requests, datetime, hmac, hashlib
+import os, json, requests
 from dotenv import load_dotenv
 
 import firebase_admin
@@ -14,10 +13,9 @@ from firebase_admin import credentials, firestore
 # ---------------------------
 app = FastAPI()
 
-# Allow CORS for frontend (localhost + deployed frontend later)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "*"],  # allow local + any
+    allow_origins=["http://localhost:5173", "*"],  # allow local + deployed frontend
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -41,7 +39,7 @@ cred = credentials.Certificate({
     "client_x509_cert_url": os.getenv("FIREBASE_CLIENT_X509_CERT_URL")
 })
 
-if not firebase_admin._apps:  # Prevent reinitialization on reload
+if not firebase_admin._apps:
     firebase_admin.initialize_app(cred)
 
 db = firestore.client()
@@ -49,112 +47,71 @@ db = firestore.client()
 # ---------------------------
 # API Keys
 # ---------------------------
-OPENWEATHER_API_KEY = os.getenv("OPENWEATHER_API_KEY")
 PERPLEXITY_API_KEY = os.getenv("PERPLEXITY_API_KEY")
 
-if not OPENWEATHER_API_KEY or not PERPLEXITY_API_KEY:
-    raise EnvironmentError("❌ Missing OPENWEATHER_API_KEY or PERPLEXITY_API_KEY in environment variables.")
-
 # ---------------------------
-# Data Models
+# Models
 # ---------------------------
-
 class ReportResponse(BaseModel):
     report: str
 
-class PaidUserProfile(BaseModel):
-    name: str
-    age: int
-    gender: str
-    city: str
-    disease: str
-    lifestyle: str
-    medical_history: str
-    smoking: str
-    exercise: str
-    diet: str
-    stress_level: str
-
-class UserProfile(BaseModel):
-    name: str
-    age: int
-    gender: str
-    city: str
-    disease: str
-
-class PollutionData(BaseModel):
-    city: str
-    lat: float
-    lon: float
-    pm2_5: float
-    pm10: float
-    co: float
-    no2: float
-    o3: float
-
-@app.post("/save_user")
-def save_user(data: UserProfile):
-    db.collection("users").add(data.dict())
-    os.makedirs("temp_storage", exist_ok=True)
-    with open("temp_storage/profile.json", "w") as f:
-        json.dump(data.dict(), f)
-    return {"msg": "User saved"}
-
-@app.post("/save_pollution")
-def save_pollution(data: PollutionData):
-    db.collection("pollution").add(data.dict())
-    os.makedirs("temp_storage", exist_ok=True)
-    with open("temp_storage/pollution.json", "w") as f:
-        json.dump(data.dict(), f)
-    return {"msg": "Pollution saved"}
-
-class ReportResponse(BaseModel):
-    report: str
-
+# ---------------------------
+# Generate Report
+# ---------------------------
 @app.get("/generate_report", response_model=ReportResponse)
-def generate_report():
-
+def generate_report(user_id: str = Query(...)):
     try:
-        with open("temp_storage/profile.json") as f1, open("temp_storage/pollution.json") as f2:
-            profile = json.load(f1)
-            pollution = json.load(f2)
-    except FileNotFoundError:
-        return {"error": "Missing profile or pollution data"}
+        # 🔹 Fetch profile
+        profile_ref = db.collection("users").document(user_id)
+        profile_doc = profile_ref.get()
+        if not profile_doc.exists:
+            return JSONResponse(status_code=404, content={"error": "User profile not found."})
+        profile = profile_doc.to_dict()
 
+        # 🔹 Fetch latest pollution (global, or per-user if you store user_id)
+        pollution_query = (
+            db.collection("pollution")
+            .order_by("timestamp", direction=firestore.Query.DESCENDING)
+            .limit(1)
+        )
+        pollution_docs = pollution_query.stream()
 
+        pollution = None
+        for doc in pollution_docs:
+            pollution = doc.to_dict()
+            break
+
+        if not pollution:
+            return JSONResponse(status_code=404, content={"error": "No pollution data found."})
+
+    except Exception as e:
+        return JSONResponse(status_code=500, content={"error": f"Firestore fetch failed: {str(e)}"})
+
+    # ---------------------------
+    # Build AI Prompt
+    # ---------------------------
     prompt = f"""
-    Generate a health impact report in a structured prescription letter format. Follow this exact layout:
+    Generate a health impact report in a structured prescription letter format:
 
-    1. **Header (top)**
-       - Location: {pollution['city']}
-       - Name: {profile['name']}
-       - Age: {profile['age']}
-       - Gender: {profile['gender']}
-       - Health Condition: {profile['disease'] if profile['disease'] != 'none' else 'None'}
+    1. **Header**
+       - Location: {pollution.get('city')}
+       - Name: {profile.get('name')}
+       - Age: {profile.get('age')}
+       - Gender: {profile.get('gender')}
+       - Health Condition: {profile.get('disease', 'None')}
 
-    2. **Summary of Local Air Conditions (3 lines)**
-       - Summarize the pollution in the area using PM2.5: {pollution['pm2_5']}, PM10: {pollution['pm10']}, CO: {pollution['co']}, NO₂: {pollution['no2']}, O₃: {pollution['o3']}.
-       - Mention if levels are safe, moderate, or unsafe.
-       - Comment briefly on the air quality's typical effect in this region.
+    2. **Summary of Air Conditions**
+       - PM2.5: {pollution.get('pm2_5')}
+       - PM10: {pollution.get('pm10')}
+       - CO: {pollution.get('co')}
+       - NO₂: {pollution.get('no2')}
+       - O₃: {pollution.get('o3')}
 
-    3. **Short-Term Effects (3 points)**
-       - Bullet points describing likely immediate health effects for a person with this profile in this area.
-
-    4. **Long-Term Effects (3 points)**
-       - Bullet points on possible chronic health issues over time.
-
-    5. **Safety Timeline**
-       - 3 Years: [risk level and expected symptoms]
-       - 5 Years: [risk level and expected symptoms]
-       - 7 Years: [risk level and expected symptoms]
-       - 10+ Years: [risk level and expected symptoms]
-
-    6. **Precautionary Measures (3 points)**
-       - Bullet points with actionable health and environmental safety tips.
-
-    Always keep the language clear, medically sound but simple, and maintain the formatting exactly as above.
+    3. Short-Term Effects
+    4. Long-Term Effects
+    5. Safety Timeline
+    6. Precautionary Measures
     """
-    
 
     headers = {
         "Authorization": f"Bearer {PERPLEXITY_API_KEY}",
@@ -170,101 +127,23 @@ def generate_report():
         response = requests.post(
             "https://api.perplexity.ai/chat/completions",
             headers=headers,
-            json=payload
+            json=payload,
+            # timeout=30
         )
         response.raise_for_status()
         data = response.json()
 
-        report_text = data.get("choices", [{}])[0].get("message", {}).get("content", "")
+        choices = data.get("choices", [])
+        if not choices:
+            return JSONResponse(status_code=500, content={"error": "No choices returned from AI."})
+
+        message = choices[0].get("message") or choices[0].get("delta", {})
+        report_text = message.get("content", "")
+
         if not report_text:
-            return {"error": "AI did not return any content."}
+            return JSONResponse(status_code=500, content={"error": "AI returned empty report."})
 
         return {"report": report_text}
 
     except requests.exceptions.RequestException as e:
-        return {"error": f"Request to AI failed: {e}"}
-
-
-
-
-# ---------------------------
-# Paid User Routes
-# ---------------------------
-@app.post("/save_paid_user")
-def save_paid_user(data: PaidUserProfile):
-    db.collection("paid_users").add(data.dict())
-    os.makedirs("temp_storage", exist_ok=True)
-    with open("temp_storage/paid_profile.json", "w") as f:
-        json.dump(data.dict(), f)
-    return {"msg": "✅ Paid user data saved"}
-
-@app.get("/generate_paid_report", response_model=ReportResponse)
-def generate_paid_report():
-    try:
-        with open("temp_storage/paid_profile.json") as f1, open("temp_storage/pollution.json") as f2:
-            profile = json.load(f1)
-            pollution = json.load(f2)
-    except FileNotFoundError:
-        return {"error": "❌ Missing paid profile or pollution data"}
-
-    prompt = f"""
-    Generate a **premium health report** in a structured medical prescription format.
-
-    1. **Patient Details**
-       - Name: {profile['name']}
-       - Age: {profile['age']}
-       - Gender: {profile['gender']}
-       - City: {profile['city']}
-       - Existing Condition: {profile['disease'] if profile['disease'] != 'none' else 'None'}
-
-    2. **Lifestyle & Medical Background**
-       - Lifestyle: {profile['lifestyle']}
-       - Medical History: {profile['medical_history']}
-       - Smoking: {profile['smoking']}
-       - Exercise: {profile['exercise']}
-       - Diet: {profile['diet']}
-       - Stress Level: {profile['stress_level']}
-
-    3. **Air Pollution Analysis**
-       - PM2.5: {pollution['pm2_5']}
-       - PM10: {pollution['pm10']}
-       - CO: {pollution['co']}
-       - NO₂: {pollution['no2']}
-       - O₃: {pollution['o3']}
-       - Assess safety levels.
-
-    4. **Personalized Health Risks**
-       - Short-term effects tailored to lifestyle.
-       - Long-term risks considering history.
-
-    5. **Graphical Insights**
-       - Suggest possible charts/visuals.
-
-    6. **Prescription & Recommendations**
-       - Medical-style advice
-       - Lifestyle changes
-       - Preventive steps
-
-    7. **Prognosis Timeline**
-       - 3 Years: ...
-       - 5 Years: ...
-       - 7 Years: ...
-       - 10+ Years: ...
-    """
-
-    headers = {"Authorization": f"Bearer {PERPLEXITY_API_KEY}", "Content-Type": "application/json"}
-    payload = {"model": "sonar-reasoning", "messages": [{"role": "user", "content": prompt}]}
-
-    try:
-        response = requests.post("https://api.perplexity.ai/chat/completions", headers=headers, json=payload)
-        response.raise_for_status()
-        data = response.json()
-
-        report_text = data.get("choices", [{}])[0].get("message", {}).get("content", "")
-        if not report_text:
-            return {"error": "❌ AI did not return any content."}
-
-        return {"report": report_text}
-
-    except requests.exceptions.RequestException as e:
-        return {"error": f"❌ Request to AI failed: {e}"}
+        return JSONResponse(status_code=500, content={"error": f"Request to AI failed: {str(e)}"})

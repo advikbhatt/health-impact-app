@@ -1,6 +1,14 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { FaBars, FaTimes, FaInfoCircle, FaDollarSign, FaEnvelope } from "react-icons/fa";
+import {
+  FaBars,
+  FaTimes,
+  FaInfoCircle,
+  FaDollarSign,
+  FaEnvelope,
+  FaUser,
+  FaHome
+} from "react-icons/fa";
 import "./Header.css";
 
 const Header = () => {
@@ -22,6 +30,10 @@ const Header = () => {
 
         {/* Desktop Menu */}
         <nav className="nav-menu">
+          <Link to="/" className="nav-item">
+            <FaHome style={{ marginRight: "0.3rem" }} />
+            Home
+          </Link>
           <Link to="/about" className="nav-item">
             <FaInfoCircle style={{ marginRight: "0.3rem" }} />
             About Us
@@ -34,6 +46,10 @@ const Header = () => {
             <FaEnvelope style={{ marginRight: "0.3rem" }} />
             Contact Us
           </Link>
+          <Link to="/profile" className="nav-item">
+            <FaUser style={{ marginRight: "0.3rem" }} />
+            Profile
+          </Link>
         </nav>
 
         {/* Mobile Menu Button */}
@@ -45,17 +61,45 @@ const Header = () => {
       {/* Mobile Menu */}
       {isOpen && (
         <div className="mobile-menu">
-          <Link to="/about" className="mobile-item" onClick={() => setIsOpen(false)}>
+          <Link
+            to="/"
+            className="mobile-item"
+            onClick={() => setIsOpen(false)}
+          >
+            <FaHome style={{ marginRight: "0.5rem" }} />
+            Home
+          </Link>
+          <Link
+            to="/about"
+            className="mobile-item"
+            onClick={() => setIsOpen(false)}
+          >
             <FaInfoCircle style={{ marginRight: "0.5rem" }} />
             About Us
           </Link>
-          <Link to="/pricing" className="mobile-item" onClick={() => setIsOpen(false)}>
+          <Link
+            to="/pricing"
+            className="mobile-item"
+            onClick={() => setIsOpen(false)}
+          >
             <FaDollarSign style={{ marginRight: "0.5rem" }} />
             Pricing
           </Link>
-          <Link to="/contact" className="mobile-item" onClick={() => setIsOpen(false)}>
+          <Link
+            to="/contact"
+            className="mobile-item"
+            onClick={() => setIsOpen(false)}
+          >
             <FaEnvelope style={{ marginRight: "0.5rem" }} />
             Contact Us
+          </Link>
+          <Link
+            to="/profile"
+            className="mobile-item"
+            onClick={() => setIsOpen(false)}
+          >
+            <FaUser style={{ marginRight: "0.5rem" }} />
+            Profile
           </Link>
         </div>
       )}
