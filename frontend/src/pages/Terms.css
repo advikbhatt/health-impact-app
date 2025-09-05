@@ -1,125 +1,65 @@
-/* ----------- Reset body margin ----------- */
-html, body {
-  margin: 0;
-  padding: 0;
-  width: 100%;
-  height: 100%;
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-}
+/* Terms.css */
 
-/* ----------- Terms Page Styles ----------- */
+/* Container */
 .terms-container {
+  font-family: "Inter", sans-serif;
+  color: #2d2d2d;
+  line-height: 1.8;
+  text-align: center;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: flex-start;
-  padding: 40px 20px;
-  width: 100%;               /* Full screen width */
-  min-height: 100vh;         /* Full screen height */
-  background: linear-gradient(180deg, #f4f4f4 0%, #dcdcdc 100%);
-  box-sizing: border-box;
+  padding: 2rem;
 }
 
-/* Page Title */
+/* Title */
 .terms-title {
-  font-size: 2rem;
-  font-weight: bold;
-  margin-bottom: 30px;
-  color: #222;
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 2rem;
+  color: #1a202c;
   text-align: center;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  position: relative;
 }
 
-.terms-title::after {
-  content: "";
-  display: block;
-  width: 60px;
-  height: 4px;
-  background: #FFDA29; /* Yellow underline (matches your theme) */
-  margin: 10px auto 0;
-  border-radius: 2px;
-}
-
-/* Word-like document box */
+/* Document Wrapper */
 .terms-doc {
-  width: 100%;
-  max-width: 900px;     /* Prevent text from being too wide */
-  height: 80vh;         /* Scrollable doc inside viewport */
-  background: #ffffff;
-  border-radius: 10px;
-  box-shadow: 0px 6px 18px rgba(0, 0, 0, 0.15);
-  padding: 30px;
-  overflow-y: auto;
-  border: 1px solid #dcdcdc;
-  line-height: 1.6;
-  font-size: 1rem;
-  color: #333;
-  animation: fadeIn 0.6s ease-in-out;
+  max-width: 900px;
+  text-align: left; /* Keep paragraphs/lists aligned left */
+  margin: 0 auto;
 }
 
-/* Scrollbar styling for "Word feel" */
-.terms-doc::-webkit-scrollbar {
-  width: 10px;
-}
-.terms-doc::-webkit-scrollbar-thumb {
-  background-color: #b5b5b5;
-  border-radius: 5px;
-}
-.terms-doc::-webkit-scrollbar-track {
-  background: #f0f0f0;
-}
-
-/* ----------- Headings inside document ----------- */
+/* Section Headings */
 .terms-doc h2 {
-  font-size: 1.25rem;
+  font-size: 1.5rem;
   font-weight: 600;
-  margin-top: 1.5rem;
-  margin-bottom: 0.5rem;
-  color: #111;
-  border-left: 4px solid #FFDA29;
-  padding-left: 8px;
-}
-
-.terms-doc p,
-.terms-doc ul {
+  margin-top: 2rem;
   margin-bottom: 1rem;
+  color: #2b6cb0;
 }
 
+/* Paragraphs */
+.terms-doc p {
+  margin-bottom: 1rem;
+  font-size: 1rem;
+}
+
+/* Lists */
 .terms-doc ul {
-  padding-left: 20px;
+  margin-bottom: 1.5rem;
+  padding-left: 1.5rem;
 }
 
-/* ----------- Responsive ----------- */
-@media (max-width: 768px) {
-  .terms-container {
-    padding: 20px;
-  }
-
-  .terms-title {
-    font-size: 1.6rem;
-  }
-
-  .terms-doc {
-    padding: 20px;
-    height: 70vh;
-    font-size: 0.95rem;
-  }
-
-  .terms-doc h2 {
-    font-size: 1.1rem;
-  }
+.terms-doc ul li {
+  margin-bottom: 0.6rem;
+  font-size: 1rem;
 }
 
-/* ----------- Animation ----------- */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(15px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+/* Links */
+.terms-doc a {
+  color: #2b6cb0;
+  text-decoration: none;
+}
+
+.terms-doc a:hover {
+  text-decoration: underline;
 }

@@ -1,64 +1,67 @@
-// src/pages/Login.jsx
 import React, { useState } from "react";
 import { auth, db } from "../firebase";
 import {
-  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
+  updateProfile,
   GoogleAuthProvider,
   signInWithPopup,
 } from "firebase/auth";
 import { doc, setDoc } from "firebase/firestore";
 import { useNavigate, Link } from "react-router-dom";
-import "./Login.css";
+import "./Login.css"; // ✅ Reuse same CSS for consistency
 
-const Login = ({ setUser }) => {
+const Register = ({ setUser }) => {
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
-  // 🔑 Email/Password Login
-  const handleLogin = async (e) => {
+  // ✨ Email/Password Register
+  const handleRegister = async (e) => {
     e.preventDefault();
     try {
-      const userCredential = await signInWithEmailAndPassword(
+      // ✅ Create account
+      const userCredential = await createUserWithEmailAndPassword(
         auth,
         email,
         password
       );
       const user = userCredential.user;
+
+      // ✅ Update display name
+      if (name) {
+        await updateProfile(user, { displayName: name });
+      }
+
+      // ✅ Save new user to Firestore
+      await setDoc(doc(db, "users", user.uid), {
+        name: name || "",
+        email: user.email,
+        photoURL: user.photoURL || "",
+        createdAt: new Date(),
+        lastLogin: new Date(),
+      });
+
       setUser(user);
-
-      // ✅ Save/update user in Firestore
-      await setDoc(
-        doc(db, "users", user.uid),
-        {
-          name: user.displayName || "",
-          email: user.email,
-          photoURL: user.photoURL || "",
-          lastLogin: new Date(),
-        },
-        { merge: true }
-      );
-
       navigate("/profile");
     } catch (err) {
-      console.error("❌ Email login error:", err);
+      console.error("❌ Registration error:", err);
 
-      // ✅ Better error messages
-      if (err.code === "auth/wrong-password") {
-        setError("Wrong password. Try again.");
-      } else if (err.code === "auth/user-not-found") {
-        setError("No account found with this email.");
+      if (err.code === "auth/email-already-in-use") {
+        setError("Email already in use. Try logging in.");
       } else if (err.code === "auth/invalid-email") {
         setError("Invalid email address format.");
+      } else if (err.code === "auth/weak-password") {
+        setError("Password should be at least 6 characters.");
       } else {
-        setError("Login failed. " + err.message);
+        setError("Registration failed. " + err.message);
       }
     }
   };
 
-  // 🔗 Google Sign-In
-  const handleGoogleLogin = async () => {
+  // 🔗 Google Sign-Up
+  const handleGoogleRegister = async () => {
     const provider = new GoogleAuthProvider();
     try {
       const result = await signInWithPopup(auth, provider);
@@ -71,6 +74,7 @@ const Login = ({ setUser }) => {
           name: user.displayName || "",
           email: user.email,
           photoURL: user.photoURL || "",
+          createdAt: new Date(),
           lastLogin: new Date(),
         },
         { merge: true }
@@ -79,16 +83,24 @@ const Login = ({ setUser }) => {
       setUser(user);
       navigate("/profile");
     } catch (err) {
-      console.error("❌ Google login error:", err);
-      setError("Google login failed. " + err.message);
+      console.error("❌ Google registration error:", err);
+      setError("Google sign-up failed. " + err.message);
     }
   };
 
   return (
     <div className="login-container">
-      <h2>Login</h2>
+      <h2>Register</h2>
 
-      <form onSubmit={handleLogin} className="login-form">
+      <form onSubmit={handleRegister} className="login-form">
+        <input
+          type="text"
+          placeholder="Full Name"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          required
+        />
+
         <input
           type="email"
           placeholder="Email"
@@ -99,7 +111,7 @@ const Login = ({ setUser }) => {
 
         <input
           type="password"
-          placeholder="Password"
+          placeholder="Password (min 6 chars)"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
@@ -107,20 +119,20 @@ const Login = ({ setUser }) => {
 
         {error && <p className="error-text">{error}</p>}
 
-        <button type="submit">Login</button>
+        <button type="submit">Register</button>
       </form>
 
       <p>
-        Don’t have an account? <Link to="/register">Register here</Link>
+        Already have an account? <Link to="/login">Login here</Link>
       </p>
 
       <hr />
 
-      <button className="google-btn" onClick={handleGoogleLogin}>
-        Sign in with Google
+      <button className="google-btn" onClick={handleGoogleRegister}>
+        Sign up with Google
       </button>
     </div>
   );
 };
 
-export default Login;
+export default Register;

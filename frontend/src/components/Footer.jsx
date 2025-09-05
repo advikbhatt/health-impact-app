@@ -16,6 +16,9 @@ const Footer = () => {
       <div className="footer-links">
         <Link to="/terms" className="footer-link">
           Terms of Service
+        </Link>        
+        <Link to="/refund-cancellation" className="footer-link">
+          Refund\Cancellation Policy
         </Link>
         {/* <Link to="/careers" className="footer-link">
           Careers

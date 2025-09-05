@@ -8,6 +8,7 @@ import Contact from "./pages/Contact";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Profile from "./pages/Profile";
+import RefundCancellation from "./pages/RefundCancellation";
 
 const App = () => {
   const [user, setUser] = useState(null);
@@ -24,6 +25,8 @@ const App = () => {
         <Route path="/pricing" element={<Pricing user={user} />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/profile" element={<Profile user={user} />} />
+        <Route path="/refund-cancellation" element={<RefundCancellation />} />
+
       </Routes>
     </Router>
   );

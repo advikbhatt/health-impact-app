@@ -1,0 +1,56 @@
+/* RefundCancellation.css */
+
+/* Page container */
+.refund-page {
+  font-family: "Inter", sans-serif;
+  color: #2d2d2d;
+  line-height: 1.8;
+  text-align: center; /* Center all text */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Title */
+.refund-page h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  color: #1a202c;
+}
+
+/* Section headings */
+.refund-page h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+  color: #2b6cb0;
+}
+
+/* Paragraphs */
+.refund-page p {
+  margin-bottom: 1rem;
+  font-size: 1rem;
+  max-width: 800px; /* keep text readable */
+}
+
+/* Lists */
+.refund-page ul {
+  margin-bottom: 1.5rem;
+  max-width: 800px;
+  text-align: left; /* keep bullets aligned left for readability */
+  display: inline-block; /* center the list block itself */
+}
+
+.refund-page ul li {
+  margin-bottom: 0.6rem;
+  font-size: 1rem;
+}
+
+/* Contact Info */
+.refund-page .contact {
+  font-weight: 600;
+  color: #1a365d;
+  margin-top: 0.5rem;
+}
