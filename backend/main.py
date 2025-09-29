@@ -78,14 +78,26 @@ def save_pollution(data: PollutionData):
 # ---------------------------
 # Generate Report
 # ---------------------------
+
 @app.get("/generate_report", response_model=ReportResponse)
 def generate_report(user_id: str = Query(...)):
     try:
         # 🔹 Fetch profile
         profile_ref = db.collection("users").document(user_id)
         profile_doc = profile_ref.get()
+
+        # 🔹 Auto-create user if not exists
         if not profile_doc.exists:
-            return JSONResponse(status_code=404, content={"error": "User profile not found."})
+            profile_ref.set({
+                "name": f"User-{user_id[:5]}",
+                "hasPaid": False,
+                "createdAt": datetime.utcnow(),
+                "age": None,
+                "gender": None,
+                "disease": None
+            })
+            profile_doc = profile_ref.get()
+
         profile = profile_doc.to_dict()
 
         # 🔒 Check payment status
