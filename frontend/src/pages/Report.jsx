@@ -41,29 +41,25 @@ const Report = () => {
         { params: { user_id: user.uid } }
       );
 
-      if (res.data?.error?.includes("Payment required")) {
+      if (res.data?.report) {
+        setHasPaid(true);
+        setReport(res.data.report);
+      }
+    } catch (err) {
+      if (err.response?.status === 402) {
         setHasPaid(false);
         setReport(
           "# Health Report\n\n💳 Payment required before generating your health report."
         );
-        return;
+      } else {
+        console.error("❌ fetchReport error:", err);
+        setError("⚠️ Failed to generate health report.");
       }
-
-      if (!res.data?.report) {
-        throw new Error("No report returned from backend");
-      }
-
-      setHasPaid(true);
-      setReport(res.data.report);
-    } catch (err) {
-      console.error("❌ fetchReport error:", err);
-      setError("⚠️ Failed to generate health report.");
     } finally {
       setLoading(false);
     }
   };
 
-  // ----- Start Payment (Real AirPay) -----
   const startPayment = async () => {
     if (!user?.uid) return alert("User UID missing");
 
@@ -77,7 +73,6 @@ const Report = () => {
       );
 
       if (res.data?.redirect_url) {
-        // Redirect user to AirPay payment page
         window.location.href = res.data.redirect_url;
       } else {
         alert("❌ Could not start payment.");
@@ -88,7 +83,6 @@ const Report = () => {
     }
   };
 
-  // ----- Download PDF -----
   const downloadPDF = () => {
     const element = reportRef.current;
     html2pdf()
