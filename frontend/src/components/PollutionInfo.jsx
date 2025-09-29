@@ -19,7 +19,9 @@ const PollutionInfo = ({ user }) => {
   const fetchPollution = async (lat, lon, city) => {
     try {
       const res = await axios.get(
-        `https://api.openweathermap.org/data/2.5/air_pollution?lat=${lat}&lon=${lon}&appid=${import.meta.env.VITE_OPENWEATHER_API_KEY}`
+        `https://api.openweathermap.org/data/2.5/air_pollution?lat=${lat}&lon=${lon}&appid=${
+          import.meta.env.VITE_OPENWEATHER_API_KEY
+        }`
       );
 
       const comp = res.data.list[0].components;
@@ -33,11 +35,26 @@ const PollutionInfo = ({ user }) => {
         co: comp.co,
         no2: comp.no2,
         o3: comp.o3,
+        timestamp: new Date().toISOString(),
+        user_id: user?.uid || null,
       };
 
-      await axios.post(`${import.meta.env.VITE_BACKEND_URL}/save_pollution`, data);
+      console.log("🌍 Pollution fetched:", data);
+
+      // 🔹 Try saving pollution data to backend
+      try {
+        const saveRes = await axios.post(
+          `${import.meta.env.VITE_BACKEND_URL}/save_pollution`,
+          data
+        );
+        console.log("✅ Pollution saved:", saveRes.data);
+      } catch (err) {
+        console.warn("⚠️ Could not save pollution to backend:", err.response?.data || err.message);
+      }
+
       setPollution(data);
-    } catch {
+    } catch (err) {
+      console.error("❌ Pollution fetch failed:", err.message);
       setError("❌ Failed to fetch pollution data.");
     }
   };
@@ -55,11 +72,14 @@ const PollutionInfo = ({ user }) => {
       async () => {
         try {
           const geo = await axios.get(
-            `https://api.openweathermap.org/geo/1.0/direct?q=${user.city}&limit=1&appid=${import.meta.env.VITE_OPENWEATHER_API_KEY}`
+            `https://api.openweathermap.org/geo/1.0/direct?q=${user.city}&limit=1&appid=${
+              import.meta.env.VITE_OPENWEATHER_API_KEY
+            }`
           );
           const { lat, lon } = geo.data[0];
           await fetchPollution(lat, lon, user.city);
-        } catch {
+        } catch (err) {
+          console.error("❌ City geolocation failed:", err.message);
           setError("⚠️ Could not determine location from city.");
         }
       }
@@ -67,7 +87,7 @@ const PollutionInfo = ({ user }) => {
   };
 
   useEffect(() => {
-    if (user) getLocation();
+    if (user?.city) getLocation();
   }, [user]);
 
   if (!user) return null;

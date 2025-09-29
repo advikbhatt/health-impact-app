@@ -2,11 +2,12 @@ from fastapi import FastAPI, Query
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
-import os, json, requests
+import os, requests
 from dotenv import load_dotenv
+from datetime import datetime
 
-import firebase_admin
-from firebase_admin import credentials, firestore
+from db import db
+from payment import router as payment_router
 
 # ---------------------------
 # Initialize FastAPI app
@@ -15,46 +16,65 @@ app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "*"],  # allow local + deployed frontend
+    allow_origins=["http://localhost:5173", "*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# ---------------------------
-# Firebase setup
-# ---------------------------
-load_dotenv()
-
-cred = credentials.Certificate({
-    "type": os.getenv("FIREBASE_TYPE"),
-    "project_id": os.getenv("FIREBASE_PROJECT_ID"),
-    "private_key_id": os.getenv("FIREBASE_PRIVATE_KEY_ID"),
-    "private_key": os.getenv("FIREBASE_PRIVATE_KEY").replace("\\n", "\n"),
-    "client_email": os.getenv("FIREBASE_CLIENT_EMAIL"),
-    "client_id": os.getenv("FIREBASE_CLIENT_ID"),
-    "auth_uri": os.getenv("FIREBASE_AUTH_URI"),
-    "token_uri": os.getenv("FIREBASE_TOKEN_URI"),
-    "auth_provider_x509_cert_url": os.getenv("FIREBASE_AUTH_PROVIDER_X509_CERT_URL"),
-    "client_x509_cert_url": os.getenv("FIREBASE_CLIENT_X509_CERT_URL")
-})
-
-if not firebase_admin._apps:
-    firebase_admin.initialize_app(cred)
-
-db = firestore.client()
+# Register payment routes
+app.include_router(payment_router)
 
 # ---------------------------
 # API Keys
 # ---------------------------
+load_dotenv()
 PERPLEXITY_API_KEY = os.getenv("PERPLEXITY_API_KEY")
 
 # ---------------------------
 # Models
 # ---------------------------
+class PollutionData(BaseModel):
+    city: str
+    pm2_5: float
+    pm10: float
+    co: float
+    no2: float
+    o3: float
+    lat: float | None = None
+    lon: float | None = None
+    timestamp: str | None = None
+    user_id: str | None = None
+
 class ReportResponse(BaseModel):
     report: str
 
+
+# ---------------------------
+# Save Pollution Data
+# ---------------------------
+@app.post("/save_pollution")
+def save_pollution(data: PollutionData):
+    try:
+        pollution_ref = db.collection("pollution").document()
+        pollution_ref.set({
+            "city": data.city,
+            "pm2_5": data.pm2_5,
+            "pm10": data.pm10,
+            "co": data.co,
+            "no2": data.no2,
+            "o3": data.o3,
+            "lat": data.lat,
+            "lon": data.lon,
+            "user_id": data.user_id,
+            "timestamp": data.timestamp or datetime.utcnow().isoformat()
+        })
+        return {"success": True, "message": "Pollution data saved successfully."}
+    except Exception as e:
+        return JSONResponse(
+            status_code=500,
+            content={"error": f"Failed to save pollution data: {str(e)}"}
+        )
 # ---------------------------
 # Generate Report
 # ---------------------------
@@ -68,10 +88,17 @@ def generate_report(user_id: str = Query(...)):
             return JSONResponse(status_code=404, content={"error": "User profile not found."})
         profile = profile_doc.to_dict()
 
-        # 🔹 Fetch latest pollution (global, or per-user if you store user_id)
+        # 🔒 Check payment status
+        if not profile.get("hasPaid", False):
+            return JSONResponse(
+                status_code=402,
+                content={"error": "Payment required"}
+            )
+
+        # 🔹 Fetch latest pollution
         pollution_query = (
             db.collection("pollution")
-            .order_by("timestamp", direction=firestore.Query.DESCENDING)
+            .order_by("timestamp", direction="DESCENDING")
             .limit(1)
         )
         pollution_docs = pollution_query.stream()
@@ -128,7 +155,6 @@ def generate_report(user_id: str = Query(...)):
             "https://api.perplexity.ai/chat/completions",
             headers=headers,
             json=payload,
-            # timeout=30
         )
         response.raise_for_status()
         data = response.json()
