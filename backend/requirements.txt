@@ -7,4 +7,3 @@ fitz
 razorpay
 setuptools 
 openai
-pycryptodome
