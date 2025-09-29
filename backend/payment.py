@@ -1,19 +1,17 @@
-from fastapi import APIRouter, Query
+# payment.py
+from fastapi import APIRouter
 from pydantic import BaseModel
 from fastapi.responses import JSONResponse
 import os, hashlib
 from dotenv import load_dotenv
 import firebase_admin
-from firebase_admin import credentials, firestore
+from firebase_admin import firestore
 
-# ---------------------------
-# Firebase init
-# ---------------------------
+# Initialize Firebase
 if not firebase_admin._apps:
-    cred = credentials.Certificate(os.getenv("FIREBASE_CRED_JSON"))  # path to your JSON key
-    firebase_admin.initialize_app(cred)
-db = firestore.client()
+    firebase_admin.initialize_app()
 
+db = firestore.client()
 router = APIRouter()
 load_dotenv()
 
@@ -22,37 +20,43 @@ AIRPAY_MERCHANT_ID = os.getenv("AIRPAY_MERCHANT_ID")
 AIRPAY_USERNAME = os.getenv("AIRPAY_USERNAME")
 AIRPAY_PASSWORD = os.getenv("AIRPAY_PASSWORD")
 AIRPAY_SECRET_KEY = os.getenv("AIRPAY_SECRET_KEY")
-AIRPAY_BASE_URL = "https://payments.airpay.co.in"  # live URL
-AIRPAY_RETURN_URL = os.getenv("AIRPAY_RETURN_URL")  # your production return URL
+AIRPAY_RETURN_URL = os.getenv("AIRPAY_RETURN_URL")  
+
+AIRPAY_BASE_URL = "https://payments.airpay.co.in"  
 
 # ----- Payment Request Model -----
 class PaymentRequest(BaseModel):
     user_id: str
     amount: float
 
-# ----- Start Payment -----
+# ----- Start Payment (AirPay) -----
 @router.post("/start_payment")
 def start_payment(req: PaymentRequest):
     try:
-        # Fetch user profile from Firebase
-        doc_ref = db.collection("users").document(req.user_id)
-        user_doc = doc_ref.get()
+        # Fetch user from Firestore
+        user_ref = db.collection("users").document(req.user_id)
+        user_doc = user_ref.get()
         if not user_doc.exists:
-            return JSONResponse(status_code=404, content={"error": "User not found in Firebase."})
+            return JSONResponse(status_code=404, content={"error": "User profile not found."})
 
         user_data = user_doc.to_dict()
 
-        # Generate checksum (AirPay)
+        # Use actual user data
+        buyer_email = user_data.get("email") 
+        buyer_phone = user_data.get("phone") 
+        buyer_name = user_data.get("name") or f"User-{req.user_id[:5]}"
+
+        # Generate checksum
         checksum_str = f"{AIRPAY_USERNAME}:{AIRPAY_PASSWORD}:{AIRPAY_SECRET_KEY}"
         checksum = hashlib.sha256(checksum_str.encode()).hexdigest()
 
-        # Build AirPay payload using Firebase data
+        # Prepare AirPay payload
         payload = {
             "mercid": AIRPAY_MERCHANT_ID,
-            "buyerEmail": user_data.get("email", f"{req.user_id}@example.com"),
-            "buyerPhone": user_data.get("phone", "9999999999"),
-            "buyerFirstName": user_data.get("name", "User").split(" ")[0],
-            "buyerLastName": user_data.get("name", "User").split(" ")[-1],
+            "buyerEmail": buyer_email,
+            "buyerPhone": buyer_phone,
+            "buyerFirstName": buyer_name,
+            "buyerLastName": buyer_name,
             "amount": str(req.amount),
             "orderid": req.user_id,
             "checksum": checksum,
