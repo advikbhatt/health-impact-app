@@ -1,19 +1,19 @@
-from fastapi import FastAPI, Query
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
-from pydantic import BaseModel
-import os, requests
 from dotenv import load_dotenv
+import os, requests
 from datetime import datetime
-
 from db import db
 from payment import router as payment_router
 
-# ---------------------------
-# Initialize FastAPI app
-# ---------------------------
+load_dotenv()
+PERPLEXITY_API_KEY = os.getenv("PERPLEXITY_API_KEY")
 app = FastAPI()
 
+# ---------------------------
+# CORS
+# ---------------------------
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
@@ -25,19 +25,16 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-
-# Register payment routes
+# ---------------------------
+# Payment routes
+# ---------------------------
 app.include_router(payment_router)
-
-# ---------------------------
-# API Keys
-# ---------------------------
-load_dotenv()
-PERPLEXITY_API_KEY = os.getenv("PERPLEXITY_API_KEY")
 
 # ---------------------------
 # Models
 # ---------------------------
+from pydantic import BaseModel
+
 class PollutionData(BaseModel):
     city: str
     pm2_5: float
@@ -52,7 +49,6 @@ class PollutionData(BaseModel):
 
 class ReportResponse(BaseModel):
     report: str
-
 
 # ---------------------------
 # Save Pollution Data
@@ -75,13 +71,13 @@ def save_pollution(data: PollutionData):
         })
         return {"success": True, "message": "Pollution data saved successfully."}
     except Exception as e:
-        return JSONResponse(
-            status_code=500,
-            content={"error": f"Failed to save pollution data: {str(e)}"}
-        )
+        return JSONResponse(status_code=500, content={"error": str(e)})
+
 # ---------------------------
-# Generate Report (Locked until payment)
+# Generate Report
 # ---------------------------
+from fastapi import Query
+
 @app.get("/generate_report", response_model=ReportResponse)
 def generate_report(user_id: str = Query(...)):
     try:
@@ -105,10 +101,7 @@ def generate_report(user_id: str = Query(...)):
 
         # 🔒 Check payment status
         if not profile.get("hasPaid", False):
-            return JSONResponse(
-                status_code=402,
-                content={"error": "Payment required"}
-            )
+            return JSONResponse(status_code=402, content={"error": "Payment required"})
 
         # 🔹 Fetch latest pollution
         pollution_query = (
@@ -127,13 +120,13 @@ def generate_report(user_id: str = Query(...)):
             return JSONResponse(status_code=404, content={"error": "No pollution data found."})
 
     except Exception as e:
-        return JSONResponse(status_code=500, content={"error": f"Firestore fetch failed: {str(e)}"})
+        return JSONResponse(status_code=500, content={"error": str(e)})
 
     # ---------------------------
     # Build AI Prompt
     # ---------------------------
     prompt = f"""
-    Generate a health impact report in a structured prescription letter format:
+    Generate a health impact report in structured format:
 
     1. **Header**
        - Location: {pollution.get('city')}
@@ -148,35 +141,19 @@ def generate_report(user_id: str = Query(...)):
        - CO: {pollution.get('co')}
        - NO₂: {pollution.get('no2')}
        - O₃: {pollution.get('o3')}
-
-    3. Short-Term Effects
-    4. Long-Term Effects
-    5. Safety Timeline
-    6. Precautionary Measures
     """
 
-    headers = {
-        "Authorization": f"Bearer {PERPLEXITY_API_KEY}",
-        "Content-Type": "application/json"
-    }
-
-    payload = {
-        "model": "sonar-reasoning",
-        "messages": [{"role": "user", "content": prompt}]
-    }
+    headers = {"Authorization": f"Bearer {PERPLEXITY_API_KEY}", "Content-Type": "application/json"}
+    payload = {"model": "sonar-reasoning", "messages": [{"role": "user", "content": prompt}]}
 
     try:
-        response = requests.post(
-            "https://api.perplexity.ai/chat/completions",
-            headers=headers,
-            json=payload,
-        )
+        response = requests.post("https://api.perplexity.ai/chat/completions", headers=headers, json=payload)
         response.raise_for_status()
         data = response.json()
 
         choices = data.get("choices", [])
         if not choices:
-            return JSONResponse(status_code=500, content={"error": "No choices returned from AI."})
+            return JSONResponse(status_code=500, content={"error": "No choices from AI."})
 
         message = choices[0].get("message") or choices[0].get("delta", {})
         report_text = message.get("content", "")
@@ -185,6 +162,5 @@ def generate_report(user_id: str = Query(...)):
             return JSONResponse(status_code=500, content={"error": "AI returned empty report."})
 
         return {"report": report_text}
-
-    except requests.exceptions.RequestException as e:
-        return JSONResponse(status_code=500, content={"error": f"Request to AI failed: {str(e)}"})
+    except Exception as e:
+        return JSONResponse(status_code=500, content={"error": str(e)})
