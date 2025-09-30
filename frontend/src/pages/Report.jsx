@@ -1,133 +1,70 @@
-// Report.jsx
-import React, { useState, useEffect, useRef } from "react";
-import axios from "axios";
-import ReactMarkdown from "react-markdown";
-import html2pdf from "html2pdf.js";
-import "./Report.css";
+import React, { useEffect, useState } from "react";
 
 const Report = () => {
-  const [user, setUser] = useState(null);
-  const [report, setReport] = useState(
-    "# Health Report\n\n⚠️ Please pay to access your health report."
-  );
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [report, setReport] = useState("");
   const [error, setError] = useState("");
-  const [hasPaid, setHasPaid] = useState(false);
-  const reportRef = useRef(null);
 
-  // ----- Generate or load UID for each user -----
+  // 👇 Get logged-in userId (adjust if you use context/provider)
+  const userId = localStorage.getItem("userId");
+
   useEffect(() => {
-    let uid = localStorage.getItem("user_uid");
-    if (!uid) {
-      uid = crypto.randomUUID(); // modern browsers
-      localStorage.setItem("user_uid", uid);
-    }
-    setUser({
-      uid,
-      name: "User-" + uid.slice(0, 5),
-    });
-  }, []);
-
-  // ----- Fetch Report -----
-  const fetchReport = async () => {
-    if (!user?.uid) return;
-
-    setLoading(true);
-    setError("");
-
-    try {
-      const res = await axios.get(
-        `${import.meta.env.VITE_BACKEND_URL}/generate_report`,
-        { params: { user_id: user.uid } }
-      );
-
-      if (res.data?.report) {
-        setHasPaid(true);
-        setReport(res.data.report);
-      }
-    } catch (err) {
-      if (err.response?.status === 402) {
-        setHasPaid(false);
-        setReport(
-          "# Health Report\n\n💳 Payment required before generating your health report."
-        );
-      } else {
-        console.error("❌ fetchReport error:", err);
-        setError("⚠️ Failed to generate health report.");
-      }
-    } finally {
+    if (!userId) {
+      setError("You must be logged in to view your report.");
       setLoading(false);
+      return;
     }
-  };
 
-  const startPayment = async () => {
-    if (!user?.uid) return alert("User UID missing");
+    const fetchReport = async () => {
+      try {
+        const res = await fetch(
+          `https://health-impact-app.onrender.com/generate_report?user_id=${userId}`
+        );
 
-    try {
-      const res = await axios.post(
-        `${import.meta.env.VITE_BACKEND_URL}/start_payment`,
-        {
-          user_id: user.uid,
-          amount: 85.0,
+        if (res.status === 402) {
+          const payRes = await fetch(
+            "https://health-impact-app.onrender.com/start_payment",
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ user_id: userId, amount: 1.0 }),
+            }
+          );
+
+          const payData = await payRes.json();
+          if (payData.redirect_url) {
+            window.location.href = payData.redirect_url; 
+          } else {
+            setError("Payment initiation failed.");
+          }
+          return;
         }
-      );
 
-      if (res.data?.redirect_url) {
-        window.location.href = res.data.redirect_url;
-      } else {
-        alert("❌ Could not start payment.");
+        if (!res.ok) {
+          const errData = await res.json();
+          setError(errData.error || "Error generating report");
+          return;
+        }
+
+        const data = await res.json();
+        setReport(data.report);
+      } catch (err) {
+        setError("Unexpected error: " + err.message);
+      } finally {
+        setLoading(false);
       }
-    } catch (err) {
-      console.error("❌ startPayment error:", err);
-      alert("⚠️ Payment failed to start.");
-    }
-  };
+    };
 
-  const downloadPDF = () => {
-    const element = reportRef.current;
-    html2pdf()
-      .set({
-        margin: 0.5,
-        filename: `Health_Report_${user?.name || "user"}.pdf`,
-        image: { type: "jpeg", quality: 0.98 },
-        html2canvas: { scale: 2 },
-        jsPDF: { unit: "in", format: "a4", orientation: "portrait" },
-      })
-      .from(element)
-      .save();
-  };
+    fetchReport();
+  }, [userId]);
 
-  useEffect(() => {
-    if (user?.uid) fetchReport();
-  }, [user]);
-
-  if (!user) return <p className="report-placeholder">Loading user info...</p>;
-  if (error) return <p className="report-error">{error}</p>;
+  if (loading) return <p className="p-4 text-gray-600">Loading report...</p>;
+  if (error) return <p className="p-4 text-red-600">{error}</p>;
 
   return (
-    <div className="report-container">
-      <h2 className="report-title">HEALTH IMPACT REPORT</h2>
-      {loading ? (
-        <p className="report-status">⏳ Generating your report. Please wait...</p>
-      ) : (
-        <>
-          <div className="report-content" ref={reportRef}>
-            <ReactMarkdown>{report}</ReactMarkdown>
-          </div>
-
-          <div className="report-actions">
-            {hasPaid ? (
-              <button onClick={downloadPDF} className="btn-download">
-                📄 Download PDF
-              </button>
-            ) : (
-              <button onClick={startPayment} className="btn-pay">
-                💳 Pay Now
-              </button>
-            )}
-          </div>
-        </>
-      )}
+    <div className="max-w-3xl mx-auto p-6 bg-white rounded-xl shadow-md">
+      <h1 className="text-2xl font-bold mb-4">Your Health Impact Report</h1>
+      <pre className="whitespace-pre-wrap text-gray-800">{report}</pre>
     </div>
   );
 };

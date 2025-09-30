@@ -76,9 +76,8 @@ def save_pollution(data: PollutionData):
             content={"error": f"Failed to save pollution data: {str(e)}"}
         )
 # ---------------------------
-# Generate Report
+# Generate Report (Locked until payment)
 # ---------------------------
-
 @app.get("/generate_report", response_model=ReportResponse)
 def generate_report(user_id: str = Query(...)):
     try:
